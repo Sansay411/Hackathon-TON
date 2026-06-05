@@ -1,0 +1,7 @@
+
+> workpay@0.1.0 bot:dev
+> tsx scripts/bot-dev.ts
+
+Starting @GetWorkPayBot in long polling mode
+Bot commands menu configured
+@GetWorkPayBot is polling for updates
