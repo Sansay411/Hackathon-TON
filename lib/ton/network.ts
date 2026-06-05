@@ -5,10 +5,18 @@ export function getTonNetwork(): TonNetwork {
 }
 
 export function getTonConnectManifestUrl() {
-  return (
-    process.env.NEXT_PUBLIC_TONCONNECT_MANIFEST_URL ??
-    `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/tonconnect-manifest.json`
-  );
+  const envUrl = process.env.NEXT_PUBLIC_TONCONNECT_MANIFEST_URL ?? process.env.NEXT_PUBLIC_APP_URL;
+  const baseUrl = envUrl?.replace(/\/+$/, "");
+
+  if (baseUrl) {
+    return `${baseUrl}/tonconnect-manifest.json`;
+  }
+
+  if (typeof window !== "undefined") {
+    return `${window.location.origin}/tonconnect-manifest.json`;
+  }
+
+  return "http://localhost:3000/tonconnect-manifest.json";
 }
 
 export const tonExplorers: Record<TonNetwork, string> = {

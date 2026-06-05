@@ -1,5 +1,7 @@
 import { BadgeCheck, Star, Trophy, UserRound } from "lucide-react";
 import { MobileShell } from "@/components/mobile/MobileShell";
+import { truncateTonAddress } from "@/lib/ton/address";
+import { demoProfile } from "@/lib/demo/data";
 
 export default function ProfilePage() {
   return (
@@ -20,6 +22,11 @@ export default function ProfilePage() {
             <Stat label="Deals" value="0" />
             <Stat label="Rating" value="New" />
             <Stat label="Paid" value="$0" />
+          </div>
+          <div className="mt-4 rounded-[20px] bg-white p-3">
+            <p className="text-xs font-black text-[#66735c]">TON wallet</p>
+            <p className="mt-1 text-sm font-black">{demoProfile.walletAddress ? truncateTonAddress(demoProfile.walletAddress) : "Not connected"}</p>
+            <p className="mt-1 text-xs font-semibold text-[#66735c]">Connect and save your TON wallet to unlock active deal actions.</p>
           </div>
         </section>
 

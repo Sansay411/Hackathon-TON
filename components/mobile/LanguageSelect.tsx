@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 const languages = [
   { code: "en", label: "English" },
   { code: "ru", label: "Русский" },
@@ -7,10 +9,19 @@ const languages = [
 ] as const;
 
 export function LanguageSelect() {
+  const [selected, setSelected] = useState<(typeof languages)[number]["code"]>("en");
+
   return (
     <div className="grid gap-3">
       {languages.map((language) => (
-        <button className="rounded-[24px] bg-white p-4 text-left font-black shadow-sm" key={language.code} type="button">
+        <button
+          className={`rounded-[24px] p-4 text-left font-black shadow-sm transition ${
+            selected === language.code ? "bg-[#229ED9] text-white" : "bg-white text-[#182014]"
+          }`}
+          key={language.code}
+          onClick={() => setSelected(language.code)}
+          type="button"
+        >
           {language.label}
         </button>
       ))}

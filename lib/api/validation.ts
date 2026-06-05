@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isLikelyTonAddress } from "@/lib/ton/address";
 
 export const languageSchema = z.enum(["en", "ru", "kk"]);
 export const roleSchema = z.enum(["client", "freelancer", "both"]);
@@ -9,6 +10,7 @@ export const profileUpdateSchema = z.object({
   bio: z.string().max(1000).optional(),
   skills: z.array(z.string().min(1).max(60)).max(20).optional(),
   hourlyRate: z.string().regex(/^\d+(\.\d{1,2})?$/).optional(),
+  walletAddress: z.string().refine(isLikelyTonAddress, { message: "Invalid TON wallet address" }).optional(),
   portfolioChannel: z.string().url().optional(),
   githubUrl: z.string().url().optional(),
   linkedinUrl: z.string().url().optional(),

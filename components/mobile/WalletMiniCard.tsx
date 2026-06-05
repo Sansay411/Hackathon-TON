@@ -3,9 +3,11 @@
 import { useTonWallet } from "@tonconnect/ui-react";
 import { WalletCards } from "lucide-react";
 import { truncateTonAddress } from "@/lib/ton/address";
+import { getTonNetwork } from "@/lib/ton/network";
 
 export function WalletMiniCard() {
   const wallet = useTonWallet();
+  const network = getTonNetwork();
 
   return (
     <div className="rounded-[26px] border border-white/70 bg-[#fbfff5] p-4 shadow-[0_12px_30px_rgba(17,24,15,0.08)]">
@@ -16,6 +18,9 @@ export function WalletMiniCard() {
         <div>
           <p className="text-xs font-black text-[#66735c]">TON wallet</p>
           <p className="text-sm font-black">{wallet ? truncateTonAddress(wallet.account.address) : "Not connected"}</p>
+          <p className="text-[11px] font-semibold text-[#66735c]">
+            {wallet ? `${network} connected` : `${network} setup required for active deal actions`}
+          </p>
         </div>
       </div>
     </div>

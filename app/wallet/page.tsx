@@ -1,4 +1,5 @@
 import { ArrowLeftRight, ShieldCheck, WalletCards } from "lucide-react";
+import { WalletConnectCard } from "@/components/wallet-connect-card";
 import { MobileShell } from "@/components/mobile/MobileShell";
 import { PaymentStatusCard } from "@/components/mobile/PaymentStatusCard";
 import { WalletMiniCard } from "@/components/mobile/WalletMiniCard";
@@ -36,6 +37,7 @@ export default function WalletPage() {
           </div>
         </section>
 
+        <WalletConnectCard />
         <WalletMiniCard />
         <PaymentStatusCard />
 
