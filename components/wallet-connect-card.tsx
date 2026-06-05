@@ -1,19 +1,22 @@
 "use client";
 
 import { TonConnectButton, useTonWallet } from "@tonconnect/ui-react";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { WalletCards } from "lucide-react";
-import { getTonNetwork } from "@/lib/ton/network";
 import { truncateTonAddress } from "@/lib/ton/address";
+import { useTelegram } from "@/components/telegram-provider";
+import { getTonNetwork } from "@/lib/ton/network";
 
 export function WalletConnectCard() {
   const wallet = useTonWallet();
+  const { isTelegram } = useTelegram();
   const network = getTonNetwork();
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [message, setMessage] = useState("");
   const walletAddress = wallet?.account.address ?? null;
+  const lastSavedWallet = useRef<string | null>(null);
 
-  async function saveWalletAddress() {
+  const saveWalletAddress = useCallback(async () => {
     if (!walletAddress) {
       return;
     }
@@ -38,25 +41,35 @@ export function WalletConnectCard() {
 
     setStatus("saved");
     setMessage(`Saved ${truncateTonAddress(payload.data.profile.walletAddress)}`);
-  }
+    lastSavedWallet.current = walletAddress;
+  }, [walletAddress]);
+
+  useEffect(() => {
+    if (!walletAddress || walletAddress === lastSavedWallet.current) {
+      return;
+    }
+
+    void saveWalletAddress();
+  }, [saveWalletAddress, walletAddress]);
 
   return (
     <section className="rounded-[28px] border border-white/70 bg-[#fbfff5] p-5 shadow-[0_14px_34px_rgba(17,24,15,0.09)]">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex items-start gap-3">
-          <div className="rounded-2xl bg-[#229ED9] p-3 text-white">
-            <WalletCards className="h-5 w-5" />
-          </div>
-          <div>
-            <p className="text-xs font-black text-[#66735c]">TON wallet</p>
-            <h2 className="mt-1 text-xl font-black">
-              {walletAddress ? truncateTonAddress(walletAddress) : "Not connected"}
-            </h2>
-            <p className="mt-1 text-sm font-semibold text-[#66735c]">
-              {walletAddress ? `${network} connected wallet` : `${network} required for apply, accept and payment actions`}
-            </p>
-          </div>
+      <div className="flex items-start gap-3">
+        <div className="rounded-2xl bg-[#229ED9] p-3 text-white">
+          <WalletCards className="h-5 w-5" />
         </div>
+        <div className="min-w-0">
+          <p className="text-xs font-black text-[#66735c]">TON wallet</p>
+          <h2 className="mt-1 break-words text-xl font-black">
+            {walletAddress ? truncateTonAddress(walletAddress) : "Not connected"}
+          </h2>
+          <p className="mt-1 text-sm font-semibold text-[#66735c]">
+            {walletAddress ? `${network} connected wallet` : `${network} required for apply, accept and payment actions`}
+          </p>
+          <p className="mt-1 text-xs font-black text-[#66735c]">{isTelegram ? "Inside Telegram" : "Outside Telegram"}</p>
+        </div>
+      </div>
+      <div className="mt-4">
         <TonConnectButton />
       </div>
       <div className="mt-4 rounded-[20px] bg-white p-3 text-xs font-semibold leading-5 text-[#66735c]">

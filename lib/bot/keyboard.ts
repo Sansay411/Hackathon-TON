@@ -34,7 +34,12 @@ export function openProfileKeyboard(profileId: string) {
 }
 
 function openAppButton(text: string, path: string) {
-  const url = buildMiniAppUrl(path);
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+  if (!appUrl) {
+    throw new Error("NEXT_PUBLIC_APP_URL is required to build Telegram Mini App URLs");
+  }
+
+  const url = buildMiniAppUrl(path, undefined, appUrl);
   if (isMiniAppWebAppUrlReady()) {
     return InlineKeyboard.webApp(text, url);
   }

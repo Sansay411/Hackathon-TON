@@ -26,7 +26,7 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-md px-4 pb-3">
+    <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-md px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
       <div className="relative grid h-20 grid-cols-5 items-center rounded-[30px] border border-[#33412b] bg-[#11180f] px-2 shadow-[0_18px_50px_rgba(17,24,15,0.32)]">
         <FloatingActionButton isActive={pathname === "/deals/new"} />
         {items.map((item) => {

@@ -20,7 +20,7 @@ export function AiReviewCard({ review, label = "Mira AI review" }: { review: AiR
         <AiRiskBadge risk={risk} />
       </div>
       <p className="mt-3 inline-flex rounded-full bg-white px-3 py-1 text-xs font-black text-[#66735c]">
-        {isRealAiConfigured ? "Mira connected" : "Development AI review provider"}
+        {isRealAiConfigured ? "Mira connected" : "Development provider"}
       </p>
       <div className="mt-4 space-y-2 text-sm font-semibold text-[#66735c]">
         {review.suggestedTerms.slice(0, 3).map((term) => <p key={term}>{term}</p>)}

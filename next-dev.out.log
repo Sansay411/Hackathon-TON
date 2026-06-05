@@ -22,3 +22,35 @@
  ✓ Compiled /wallet in 367ms (853 modules)
  GET /wallet 200 in 700ms
  GET / 200 in 77ms
+ ✓ Compiled in 974ms (845 modules)
+ ✓ Compiled in 171ms (330 modules)
+ GET / 200 in 328ms
+ ✓ Compiled /marketplace in 228ms (523 modules)
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 2.2s (1186 modules)
+ HEAD / 200 in 1150ms
+ HEAD /marketplace 200 in 102ms
+ ✓ Compiled /deals/[id]/receipt in 291ms (723 modules)
+ HEAD /deals/foundation-preview/receipt 200 in 570ms
+ ○ Compiling /tonconnect-manifest.json ...
+ ✓ Compiled /tonconnect-manifest.json in 524ms (1211 modules)
+ GET /tonconnect-manifest.json 200 in 734ms
+ ✓ Compiled in 560ms (1097 modules)
+ ✓ Compiled in 183ms (483 modules)
+ ✓ Compiled in 450ms (1097 modules)
+ ✓ Compiled in 190ms (483 modules)
+ ✓ Compiled in 199ms (483 modules)
+ ✓ Compiled in 162ms (483 modules)
+ ✓ Compiled in 540ms (1097 modules)
+ ✓ Compiled /_not-found in 441ms (1088 modules)
+ ✓ Compiled /_error in 494ms (1184 modules)
+ GET / 500 in 3435ms
+ GET / 200 in 1829ms
+ ○ Compiling /api/demo/seed ...
+ ✓ Compiled /api/demo/seed in 884ms (1116 modules)
+ POST /api/demo/seed 200 in 1227ms
+ GET / 200 in 1518ms
+ ✓ Compiled /_error in 1590ms (1198 modules)
+ GET / 500 in 1581ms
+ GET / 500 in 79ms
+ HEAD / 200 in 705ms

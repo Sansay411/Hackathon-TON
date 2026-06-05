@@ -4,9 +4,11 @@ import { useTonWallet } from "@tonconnect/ui-react";
 import { WalletCards } from "lucide-react";
 import { truncateTonAddress } from "@/lib/ton/address";
 import { getTonNetwork } from "@/lib/ton/network";
+import { useTelegram } from "@/components/telegram-provider";
 
 export function WalletMiniCard() {
   const wallet = useTonWallet();
+  const { isTelegram } = useTelegram();
   const network = getTonNetwork();
 
   return (
@@ -21,6 +23,7 @@ export function WalletMiniCard() {
           <p className="text-[11px] font-semibold text-[#66735c]">
             {wallet ? `${network} connected` : `${network} setup required for active deal actions`}
           </p>
+          <p className="text-[11px] font-black text-[#66735c]">{isTelegram ? "Inside Telegram" : "Outside Telegram"}</p>
         </div>
       </div>
     </div>

@@ -64,7 +64,7 @@ It does not create fake confirmed payments.
 9. Accept application and show deal created.
 10. Open Deals.
 11. Open deal detail.
-12. Show payment panel: direct TON and STON.fi setup requirements.
+12. Show wallet card, save the connected address to profile, then show payment panel: direct TON and STON.fi setup requirements.
 13. Open receipt.
 14. Open Energy page and show balance/history.
 15. Open Profile and explain reputation.

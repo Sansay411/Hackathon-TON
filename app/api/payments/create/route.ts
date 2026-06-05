@@ -1,20 +1,28 @@
 import { apiError, apiOk } from "@/lib/api/errors";
-import { paymentCreateSchema } from "@/lib/api/validation";
-import { buildTonTransferRequest } from "@/lib/ton/transactionBuilder";
+import { paymentCreateSchema, walletConnectSchema } from "@/lib/api/validation";
+import { isLikelyTonAddress } from "@/lib/ton/address";
+
+const createPaymentSchema = paymentCreateSchema.merge(walletConnectSchema);
 
 export async function POST(request: Request) {
-  const parsed = paymentCreateSchema.safeParse(await request.json());
+  const parsed = createPaymentSchema.safeParse(await request.json());
   if (!parsed.success) {
     return apiError("bad_request", "Invalid payment create payload.", 400);
   }
+  if (!isLikelyTonAddress(parsed.data.walletAddress)) {
+    return apiError("forbidden", "Connect TON wallet to continue.", 403);
+  }
+
+  const tonConfigured = Boolean(process.env.TONAPI_KEY || process.env.TONCENTER_API_KEY);
+  if (!tonConfigured) {
+    return apiError("payment_setup_required", "Real TON payment provider is required before preparing a payment.", 503);
+  }
+
   return apiOk({
-    payment: { id: "payment-demo-created", status: "waiting_wallet_signature", ...parsed.data },
-    tonConnect: buildTonTransferRequest({
-      destination: "EQ_WORKPAY_ESCROW_TESTNET_PLACEHOLDER",
-      amount: parsed.data.amount,
-      asset: parsed.data.asset,
-      comment: `WorkPay deal ${parsed.data.dealId}`
-    }),
+    provider: {
+      status: "ready",
+      missing: []
+    },
     auditEvent: "payment_started"
   });
 }

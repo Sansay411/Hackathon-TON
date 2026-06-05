@@ -1,4 +1,5 @@
 import { ArrowLeftRight, LockKeyhole, WalletCards } from "lucide-react";
+import { WalletGateButton, WalletGateNotice } from "@/components/wallet-access";
 
 export function PaymentStatusCard() {
   const tonConfigured = Boolean(process.env.TONAPI_KEY || process.env.TONCENTER_API_KEY);
@@ -38,9 +39,7 @@ export function PaymentStatusCard() {
             <div className="rounded-2xl bg-[#f2f8e9] p-3 text-xs font-semibold text-[#66735c]">
               Quote area ready. Request quote when STON.fi provider is connected.
             </div>
-            <button className="w-full rounded-2xl bg-[#229ED9] px-4 py-3 text-sm font-black text-white" type="button">
-              Prepare swap transaction
-            </button>
+            <WalletGateButton className="w-full rounded-2xl bg-[#229ED9] px-4 py-3 text-sm font-black text-white disabled:cursor-not-allowed disabled:opacity-60" connectedLabel="Prepare swap transaction" />
           </div>
         ) : (
           <div className="text-xs font-semibold leading-5 text-[#66735c]">
@@ -49,6 +48,7 @@ export function PaymentStatusCard() {
           </div>
         )}
       </div>
+      <WalletGateNotice />
     </section>
   );
 }

@@ -48,6 +48,7 @@ The initial RLS policies are broad foundation policies. Before production, bind 
 3. Set `TELEGRAM_BOT_TOKEN`.
 4. The client extracts `initData` only. Server verification happens in `app/api/auth/telegram/route.ts`.
 5. Do not trust `initDataUnsafe` for authorization.
+6. `NEXT_PUBLIC_TONCONNECT_MANIFEST_URL` should be the full manifest URL when set. If omitted, the app falls back to `NEXT_PUBLIC_APP_URL/tonconnect-manifest.json`.
 
 ## Telegram Bot Setup
 

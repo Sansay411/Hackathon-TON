@@ -1,13 +1,19 @@
 import { apiError, apiOk } from "@/lib/api/errors";
-import { applyJobSchema } from "@/lib/api/validation";
+import { applyJobSchema, walletConnectSchema } from "@/lib/api/validation";
 import { demoApplications, demoJobs, demoProfile } from "@/lib/demo/data";
 import { assertCanSpendEnergy, calculateApplicationEnergyCost } from "@/lib/energy/service";
+import { isLikelyTonAddress } from "@/lib/ton/address";
+
+const applicationSchema = applyJobSchema.merge(walletConnectSchema);
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const parsed = applyJobSchema.safeParse(await request.json());
+  const parsed = applicationSchema.safeParse(await request.json());
   if (!parsed.success) {
     return apiError("bad_request", "Invalid application payload.", 400);
+  }
+  if (!isLikelyTonAddress(parsed.data.walletAddress)) {
+    return apiError("forbidden", "Connect TON wallet to continue.", 403);
   }
   const job = demoJobs.find((item) => item.id === id);
   if (!job) {

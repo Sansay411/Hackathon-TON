@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { ShieldAlert, Zap } from "lucide-react";
 import { AiReviewCard } from "@/components/mobile/AiReviewCard";
 import { MobileShell } from "@/components/mobile/MobileShell";
+import { WalletGateLink } from "@/components/wallet-access";
 import { demoJobs } from "@/lib/demo/data";
 import type { AiReview } from "@/lib/domain/types";
 
@@ -41,9 +41,9 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
             <p className="font-black">Apply cost: 1 Energy</p>
           </div>
           <p className="mt-2 text-sm font-semibold leading-6 text-[#66735c]">Applying spends Energy server-side. Duplicate applications are blocked.</p>
-          <Link className="mt-4 block rounded-[22px] bg-[#c8ff45] px-4 py-3 text-center font-black text-[#182014]" href="/applications">
+          <WalletGateLink className="mt-4 block rounded-[22px] bg-[#c8ff45] px-4 py-3 text-center font-black text-[#182014]" href="/applications">
             Apply with Energy
-          </Link>
+          </WalletGateLink>
         </section>
         <section className="rounded-[26px] bg-white p-4 shadow-sm">
           <div className="flex items-center gap-2">

@@ -14,11 +14,8 @@ WorkPay uses a grammY bot for Telegram launch and command routing. The bot opens
 
 ## Commands
 
-- `/start`: welcome message and Mini App buttons.
-- `/create`: opens `/deals/new`.
-- `/deals`: opens `/deals`.
-- `/wallet`: opens WorkPay for wallet connection.
-- `/help`: short workflow help.
+- `/start`: welcome message and Open WorkPay Mini App button.
+- `/help`: short workflow help and Open WorkPay Mini App button.
 
 Unknown text receives a short reply with an Open WorkPay Mini App button.
 
