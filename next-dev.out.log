@@ -8,19 +8,4 @@
    - Environments: .env.local
 
  ✓ Starting...
- ✓ Ready in 2.4s
- ○ Compiling /api/payments/verify ...
- ✓ Compiled /api/payments/verify in 1218ms (312 modules)
- POST /api/payments/verify 200 in 1974ms
- POST /api/payments/verify 200 in 176ms
- POST /api/payments/verify 200 in 340ms
- POST /api/payments/verify 200 in 136ms
- POST /api/payments/verify 400 in 25ms
- POST /api/payments/verify 200 in 21ms
- ✓ Compiled in 265ms (117 modules)
- POST /api/payments/verify 200 in 450ms
- POST /api/payments/verify 200 in 164ms
- POST /api/payments/verify 200 in 310ms
- POST /api/payments/verify 200 in 133ms
- POST /api/payments/verify 400 in 14ms
- POST /api/payments/verify 200 in 20ms
+ ✓ Ready in 2.1s

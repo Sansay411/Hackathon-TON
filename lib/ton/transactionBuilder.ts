@@ -12,7 +12,7 @@ export function buildTonTransferRequest(input: TonTransferRequest) {
   const comment = input.comment ?? "WorkPay escrow funding";
   return {
     validUntil: Math.floor(Date.now() / 1000) + 600,
-    network: process.env.NEXT_PUBLIC_TON_NETWORK === "mainnet" ? "-239" : "-3",
+    network: process.env.NEXT_PUBLIC_TON_NETWORK === "mainnet" ? -239 : -3,
     from: input.from,
     messages: [
       {
@@ -20,8 +20,7 @@ export function buildTonTransferRequest(input: TonTransferRequest) {
         amount: input.amount,
         payload: buildTextCommentPayload(comment)
       }
-    ],
-    workpayReference: comment
+    ]
   };
 }
 
