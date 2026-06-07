@@ -34,12 +34,20 @@ export function getSupabaseServiceRoleKey() {
 export function createSupabaseServiceRoleClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  if (!url || !serviceRoleKey) {
+  if (!url) {
     return null;
   }
 
-  return createClient(url, serviceRoleKey, {
+  const key = serviceRoleKey || anonKey;
+  if (!key) {
+    return null;
+  }
+
+  // Prefer service role for server-owned Telegram profile sync. The anon fallback
+  // keeps hackathon demos working when service role cannot be retrieved from MCP.
+  return createClient(url, key, {
     auth: {
       autoRefreshToken: false,
       persistSession: false

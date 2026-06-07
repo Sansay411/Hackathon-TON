@@ -17,7 +17,14 @@ type PaymentCreateResponse = {
   ok?: boolean;
   data?: {
     transaction?: Parameters<ReturnType<typeof useTonConnectUI>[0]["sendTransaction"]>[0];
-    payment?: { reference?: string };
+  };
+  error?: { code?: string; message?: string };
+};
+
+type PaymentVerifyResponse = {
+  ok?: boolean;
+  data?: {
+    verification?: { status?: string; reason?: string };
   };
   error?: { code?: string; message?: string };
 };
@@ -28,6 +35,7 @@ export function PaymentStatusCard({ dealId, amount, asset }: PaymentStatusCardPr
   const { t } = useLanguage();
   const [tab, setTab] = useState<"direct" | "stonfi">("direct");
   const [status, setStatus] = useState<string>(t.paymentCard.awaitingTx);
+  const [txHash, setTxHash] = useState("");
   const [busy, setBusy] = useState(false);
 
   return (
@@ -35,12 +43,13 @@ export function PaymentStatusCard({ dealId, amount, asset }: PaymentStatusCardPr
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-black text-[#229ED9]">{t.paymentCard.title}</p>
-          <h2 className="mt-1 text-2xl font-black">{t.paymentCard.escrowPrepared}</h2>
+          <h2 className="mt-1 text-2xl font-black">{t.paymentCard.escrowProof}</h2>
         </div>
         <div className="rounded-2xl bg-[#00658e] p-3 text-white">
           <LockKeyhole className="h-6 w-6" />
         </div>
       </div>
+
       <div className="mt-4 grid grid-cols-2 gap-2 rounded-[18px] bg-[#f6faff] p-1">
         <button className={`rounded-2xl px-3 py-2 text-sm font-black ${tab === "direct" ? "bg-white text-[#171c20] shadow-sm" : "text-[#64748b]"}`} onClick={() => setTab("direct")} type="button">
           {t.paymentCard.directTon}
@@ -49,15 +58,17 @@ export function PaymentStatusCard({ dealId, amount, asset }: PaymentStatusCardPr
           {t.paymentCard.stonfiSwap}
         </button>
       </div>
+
       <div className="mt-5 grid gap-3">
-        <StatusRow icon={<WalletCards className="h-4 w-4" />} label={t.paymentCard.directTonPayment} value={t.paymentCard.awaitingEscrowSetup} />
-        <StatusRow icon={<ArrowLeftRight className="h-4 w-4" />} label={t.paymentCard.stonfiSwapPayment} value={t.paymentCard.stonfiSetupRequired} />
+        <StatusRow icon={<WalletCards className="h-4 w-4" />} label={t.paymentCard.directTonPayment} value={t.paymentCard.tonCenterVerify} />
+        <StatusRow icon={<ArrowLeftRight className="h-4 w-4" />} label={t.paymentCard.stonfiSwapPayment} value={t.paymentCard.omnistonSetupRequired} />
         <StatusRow icon={<LockKeyhole className="h-4 w-4" />} label={t.paymentCard.escrowStatus} value={status} />
       </div>
+
       {tab === "direct" ? (
         <div className="mt-4 rounded-[20px] bg-[#f6faff] p-3 text-xs font-semibold leading-5 text-[#64748b]">
           <p className="font-black text-[#171c20]">{t.paymentCard.directTon}</p>
-          <p>{t.paymentCard.directTonBody}</p>
+          <p>{t.paymentCard.directTonBodyVerify}</p>
           <WalletGateButton
             className="mt-3 w-full rounded-2xl bg-[#229ED9] px-4 py-3 text-sm font-black text-white disabled:cursor-not-allowed disabled:opacity-60"
             connectedLabel={busy ? t.paymentCard.openingWallet : `${t.paymentCard.prepare} ${amount} ${asset}`}
@@ -76,7 +87,7 @@ export function PaymentStatusCard({ dealId, amount, asset }: PaymentStatusCardPr
                   return;
                 }
                 await tonConnectUI.sendTransaction(payload.data.transaction);
-                setStatus(t.paymentCard.walletAccepted);
+                setStatus(t.paymentCard.walletAcceptedVerify);
               } catch (error) {
                 setStatus(error instanceof Error ? error.message : t.paymentCard.walletRejected);
               } finally {
@@ -84,6 +95,44 @@ export function PaymentStatusCard({ dealId, amount, asset }: PaymentStatusCardPr
               }
             }}
           />
+
+          <div className="mt-3 grid gap-2">
+            <input
+              className="h-11 rounded-2xl border border-[#dfe3e8] bg-white px-3 text-sm font-semibold text-[#171c20] outline-none"
+              onChange={(event) => setTxHash(event.target.value)}
+              placeholder={t.paymentCard.txHashPlaceholder}
+              value={txHash}
+            />
+            <button
+              className="rounded-2xl border border-[#229ED9] bg-white px-4 py-3 text-sm font-black text-[#00658e] disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={busy || txHash.trim().length < 40}
+              onClick={async () => {
+                setBusy(true);
+                setStatus(t.paymentCard.verifyingTonCenter);
+                try {
+                  const response = await fetch("/api/payments/verify", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ initData, dealId, txHash, expectedAmount: amount, expectedAsset: asset, network: "testnet" })
+                  });
+                  const payload = (await response.json()) as PaymentVerifyResponse;
+                  const verification = payload.data?.verification;
+                  if (!response.ok || !payload.ok) {
+                    setStatus(payload.error?.message ?? t.paymentCard.tonCenterVerificationFailed);
+                    return;
+                  }
+                  setStatus(verification?.status === "confirmed" ? t.paymentCard.tonCenterConfirmed : verification?.reason ?? verification?.status ?? t.paymentCard.notConfirmed);
+                } catch (error) {
+                  setStatus(error instanceof Error ? error.message : t.paymentCard.tonCenterRequestFailed);
+                } finally {
+                  setBusy(false);
+                }
+              }}
+              type="button"
+            >
+              {t.paymentCard.verifyWithTonCenter}
+            </button>
+          </div>
         </div>
       ) : (
         <div className="mt-4 rounded-[20px] bg-[#f6faff] p-3">
@@ -96,7 +145,7 @@ export function PaymentStatusCard({ dealId, amount, asset }: PaymentStatusCardPr
               </select>
             </label>
             <div className="rounded-2xl bg-[#f6faff] p-3 text-xs font-semibold text-[#64748b]">
-              {t.paymentCard.stonfiOmniston}
+              {t.paymentCard.stonfiOmnistonLong}
             </div>
             <button className="w-full cursor-not-allowed rounded-2xl bg-[#dfe3e8] px-4 py-3 text-sm font-black text-[#64748b]" disabled type="button">
               {t.paymentCard.swapSetupRequired}

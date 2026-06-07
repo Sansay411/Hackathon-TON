@@ -6,6 +6,7 @@ import { DealHighlightCard } from "@/components/mobile/DealHighlightCard";
 import { DealListCard } from "@/components/mobile/DealListCard";
 import { EmptyState } from "@/components/mobile/EmptyState";
 import { MobileShell } from "@/components/mobile/MobileShell";
+import { WorkPayLogo } from "@/components/mobile/WorkPayLogo";
 
 export default function DealsPage() {
   const { t } = useLanguage();
@@ -43,7 +44,7 @@ export default function DealsPage() {
             <p className="text-sm font-black text-[#229ED9]">{t.deals.eyebrow}</p>
             <h1 className="mt-1 text-[34px] font-black leading-none tracking-normal">{t.deals.title}</h1>
           </div>
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#00658e] text-sm font-black text-white ring-4 ring-white/70">WP</div>
+          <WorkPayLogo size="md" />
         </header>
 
         <label className="flex h-14 items-center gap-3 rounded-[24px] border border-[#dfe3e8] bg-white px-4 shadow-[0_12px_30px_rgba(0,101,142,0.08)]">

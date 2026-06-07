@@ -5,7 +5,7 @@ import { walletRequiredError } from "@/lib/api/profile";
 import { canTransitionDeal } from "@/lib/domain/deal-status";
 import { assertCanSpendEnergy, calculateApplicationEnergyCost } from "@/lib/energy/service";
 import { isLikelyTonAddress, truncateTonAddress } from "@/lib/ton/address";
-import { tonToNano } from "@/lib/ton/transactionBuilder";
+import { buildTextCommentPayload, tonToNano } from "@/lib/ton/transactionBuilder";
 
 test("energy spend requires positive balance", () => {
   assert.equal(calculateApplicationEnergyCost({ rating: 5 }), 1);
@@ -38,4 +38,10 @@ test("TON decimal amount converts to nanotons", () => {
   assert.equal(tonToNano("1"), "1000000000");
   assert.equal(tonToNano("0.25"), "250000000");
   assert.throws(() => tonToNano("0.1234567891"), /Invalid TON amount/);
+});
+
+test("TON transfer payload carries WorkPay text comment", () => {
+  const payload = buildTextCommentPayload("workpay:deal-1");
+  assert.match(payload, /^[A-Za-z0-9+/]+=*$/);
+  assert.ok(Buffer.from(payload, "base64").length > 8);
 });

@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { CheckCircle2, Languages, UserRound, WalletCards } from "lucide-react";
+import { CheckCircle2, Languages, Loader2, UserRound, WalletCards } from "lucide-react";
 import { useLanguage } from "@/components/language-provider";
 import { useTelegram } from "@/components/telegram-provider";
+import { WorkPayLogo } from "@/components/mobile/WorkPayLogo";
 import type { WorkPayLanguage } from "@/lib/domain/types";
 
 const storageKey = "workpay:onboarding:v1";
@@ -27,20 +27,21 @@ const roles = [
 ] as const;
 
 export function LaunchOnboarding({ children }: { children: React.ReactNode }) {
-  const { user, authStatus, isTelegram } = useTelegram();
+  const { user, authStatus, isTelegram, initData } = useTelegram();
   const { language, setLanguage, t } = useLanguage();
   const [ready, setReady] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
   const [role, setRole] = useState<(typeof roles)[number]["value"]>("both");
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    const saved = window.localStorage.getItem(storageKey);
+    const saved = window.localStorage.getItem(user?.telegramId ? `${storageKey}:${user.telegramId}` : storageKey);
     if (saved === "complete") {
       setCompleted(true);
     }
     setReady(true);
-  }, []);
+  }, [user?.telegramId]);
 
   useEffect(() => {
     if (user?.languageCode) {
@@ -64,16 +65,33 @@ export function LaunchOnboarding({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
-  const finish = () => {
-    window.localStorage.setItem(storageKey, "complete");
+  const finish = async () => {
+    setSaving(true);
+    if (initData && authStatus === "verified") {
+      try {
+        await fetch("/api/profile/update", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ initData, language, role })
+        });
+      } catch {
+        // Local completion still prevents a broken first-run loop if persistence is temporarily unavailable.
+      }
+    }
+    window.localStorage.setItem(user?.telegramId ? `${storageKey}:${user.telegramId}` : storageKey, "complete");
     setCompleted(true);
+    setSaving(false);
   };
 
   return (
-    <div className="space-y-5">
-      <section className="rounded-[28px] border border-white bg-white/80 p-4 shadow-[0_10px_30px_rgba(0,101,142,0.07)] backdrop-blur">
-        <div className="flex items-center gap-3">
-          <TelegramAvatar photoUrl={user?.photoUrl ?? null} name={displayName} />
+    <main className="min-h-[100dvh] overflow-hidden bg-[#f6faff] text-[#171c20]">
+      <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-[430px] flex-col px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[max(1.25rem,env(safe-area-inset-top))]">
+        <div className="pointer-events-none absolute -right-20 top-10 h-48 w-48 animate-pulse rounded-full bg-[#80d8ff]/40 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-20 -left-16 h-56 w-56 animate-pulse rounded-full bg-[#229ED9]/20 blur-3xl" />
+
+        <section className="relative rounded-[30px] border border-white bg-white/85 p-4 shadow-[0_14px_40px_rgba(0,101,142,0.1)] backdrop-blur">
+          <div className="flex items-center gap-3">
+            <WorkPayLogo size="lg" className="animate-pulse" />
           <div className="min-w-0">
             <p className="text-sm font-black text-[#00658e]">{t.onboarding.setup}</p>
             <h1 className="truncate text-2xl font-black text-[#171c20]">{displayName}</h1>
@@ -89,11 +107,11 @@ export function LaunchOnboarding({ children }: { children: React.ReactNode }) {
                       : t.onboarding.verifyUnavailable}
             </p>
           </div>
-        </div>
-      </section>
+          </div>
+        </section>
 
-      <section className="rounded-3xl border border-[#dfe3e8] bg-white p-4 shadow-[0_10px_30px_rgba(0,101,142,0.07)]">
-        <div className="grid grid-cols-4 gap-2">
+        <section className="relative mt-5 rounded-3xl border border-[#dfe3e8] bg-white p-4 shadow-[0_10px_30px_rgba(0,101,142,0.07)]">
+          <div className="grid grid-cols-4 gap-2">
           {steps.map((step, index) => (
             <div className="text-center" key={step.id}>
               <div className={`mx-auto flex h-8 w-8 items-center justify-center rounded-full text-xs font-black ${index <= stepIndex ? "bg-[#229ED9] text-white" : "bg-[#e6f7ff] text-[#00658e]"}`}>
@@ -102,11 +120,12 @@ export function LaunchOnboarding({ children }: { children: React.ReactNode }) {
               <p className="mt-1 truncate text-[10px] font-bold text-[#64748b]">{t.onboarding[step.labelKey]}</p>
             </div>
           ))}
-        </div>
-      </section>
+          </div>
+        </section>
 
-      {currentStep === "language" ? (
-        <SetupCard icon={<Languages className="h-5 w-5" />} title={t.onboarding.chooseLanguage} body={t.onboarding.languageBody}>
+        <div className="relative mt-5 flex-1">
+          {currentStep === "language" ? (
+            <SetupCard icon={<Languages className="h-5 w-5" />} title={t.onboarding.chooseLanguage} body={t.onboarding.languageBody}>
           <div className="grid gap-3">
             {languages.map((item) => (
               <button
@@ -119,11 +138,11 @@ export function LaunchOnboarding({ children }: { children: React.ReactNode }) {
               </button>
             ))}
           </div>
-        </SetupCard>
-      ) : null}
+            </SetupCard>
+          ) : null}
 
-      {currentStep === "role" ? (
-        <SetupCard icon={<UserRound className="h-5 w-5" />} title={t.onboarding.chooseRole} body={t.onboarding.roleBody}>
+          {currentStep === "role" ? (
+            <SetupCard icon={<UserRound className="h-5 w-5" />} title={t.onboarding.chooseRole} body={t.onboarding.roleBody}>
           <div className="grid gap-3">
             {roles.map((item) => (
               <button
@@ -136,43 +155,43 @@ export function LaunchOnboarding({ children }: { children: React.ReactNode }) {
               </button>
             ))}
           </div>
-        </SetupCard>
-      ) : null}
+            </SetupCard>
+          ) : null}
 
-      {currentStep === "wallet" ? (
-        <SetupCard icon={<WalletCards className="h-5 w-5" />} title={t.onboarding.connectWallet} body={t.onboarding.walletBody}>
-          <Link className="block rounded-2xl bg-[#229ED9] px-4 py-3 text-center text-sm font-black text-white" href="/wallet">
-            {t.onboarding.openWallet}
-          </Link>
-        </SetupCard>
-      ) : null}
+          {currentStep === "wallet" ? (
+            <SetupCard icon={<WalletCards className="h-5 w-5" />} title={t.onboarding.connectWallet} body={t.onboarding.walletBody}>
+              <p className="rounded-2xl bg-[#e6f7ff] px-4 py-3 text-center text-sm font-black text-[#00658e]">{t.onboarding.openWallet}</p>
+            </SetupCard>
+          ) : null}
 
-      {currentStep === "profile" ? (
-        <SetupCard icon={<UserRound className="h-5 w-5" />} title={t.onboarding.completeProfile} body={t.onboarding.profileBody}>
-          <Link className="block rounded-2xl bg-[#e6f7ff] px-4 py-3 text-center text-sm font-black text-[#00658e]" href="/profile">
-            {t.onboarding.fillProfile}
-          </Link>
-        </SetupCard>
-      ) : null}
+          {currentStep === "profile" ? (
+            <SetupCard icon={<UserRound className="h-5 w-5" />} title={t.onboarding.completeProfile} body={t.onboarding.profileBody}>
+              <p className="rounded-2xl bg-[#e6f7ff] px-4 py-3 text-center text-sm font-black text-[#00658e]">{t.onboarding.fillProfile}</p>
+            </SetupCard>
+          ) : null}
+        </div>
 
-      <div className="grid grid-cols-2 gap-3 pb-8">
+        <div className="relative grid grid-cols-2 gap-3 pt-5">
         <button
           className="rounded-2xl border border-[#dfe3e8] bg-white px-4 py-3 text-sm font-black text-[#64748b] disabled:opacity-40"
-          disabled={stepIndex === 0}
+          disabled={stepIndex === 0 || saving}
           onClick={() => setStepIndex((current) => Math.max(0, current - 1))}
           type="button"
         >
           {t.common.back}
         </button>
         <button
-          className="rounded-2xl bg-[#00658e] px-4 py-3 text-sm font-black text-white"
-          onClick={() => (stepIndex >= steps.length - 1 ? finish() : setStepIndex((current) => current + 1))}
+          className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#00658e] px-4 py-3 text-sm font-black text-white disabled:opacity-70"
+          disabled={saving}
+          onClick={() => (stepIndex >= steps.length - 1 ? void finish() : setStepIndex((current) => current + 1))}
           type="button"
         >
+          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
           {stepIndex >= steps.length - 1 ? t.common.openWorkPay : t.common.continue}
         </button>
+        </div>
       </div>
-    </div>
+    </main>
   );
 }
 
@@ -184,17 +203,5 @@ function SetupCard({ icon, title, body, children }: { icon: React.ReactNode; tit
       <p className="mt-2 text-sm font-semibold leading-6 text-[#64748b]">{body}</p>
       <div className="mt-4">{children}</div>
     </section>
-  );
-}
-
-function TelegramAvatar({ photoUrl, name }: { photoUrl: string | null; name: string }) {
-  if (photoUrl) {
-    return <img alt={name} className="h-14 w-14 shrink-0 rounded-full object-cover ring-4 ring-white" src={photoUrl} />;
-  }
-
-  return (
-    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#001e2e] text-lg font-black text-white ring-4 ring-white">
-      {name.slice(0, 1).toUpperCase()}
-    </div>
   );
 }

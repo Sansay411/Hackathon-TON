@@ -1,56 +1,26 @@
 
 > workpay@0.1.0 dev
-> next dev --hostname 127.0.0.1 --port 3000
+> next dev
 
    ▲ Next.js 15.5.19
-   - Local:        http://127.0.0.1:3000
-   - Network:      http://127.0.0.1:3000
+   - Local:        http://localhost:3000
+   - Network:      http://100.78.175.18:3000
    - Environments: .env.local
 
  ✓ Starting...
- ✓ Ready in 2s
- ○ Compiling / ...
- ✓ Compiled / in 14.6s (842 modules)
- GET / 200 in 15734ms
- ○ Compiling /deals/[id]/receipt ...
- ✓ Compiled /deals/[id]/receipt in 628ms (849 modules)
- GET /deals/foundation-preview/receipt 200 in 1549ms
- GET / 200 in 276ms
- ✓ Compiled /marketplace in 460ms (844 modules)
- GET /marketplace 200 in 776ms
- GET /deals/foundation-preview/receipt 200 in 99ms
- ✓ Compiled /wallet in 367ms (853 modules)
- GET /wallet 200 in 700ms
- GET / 200 in 77ms
- ✓ Compiled in 974ms (845 modules)
- ✓ Compiled in 171ms (330 modules)
- GET / 200 in 328ms
- ✓ Compiled /marketplace in 228ms (523 modules)
- ○ Compiling /_error ...
- ✓ Compiled /_error in 2.2s (1186 modules)
- HEAD / 200 in 1150ms
- HEAD /marketplace 200 in 102ms
- ✓ Compiled /deals/[id]/receipt in 291ms (723 modules)
- HEAD /deals/foundation-preview/receipt 200 in 570ms
- ○ Compiling /tonconnect-manifest.json ...
- ✓ Compiled /tonconnect-manifest.json in 524ms (1211 modules)
- GET /tonconnect-manifest.json 200 in 734ms
- ✓ Compiled in 560ms (1097 modules)
- ✓ Compiled in 183ms (483 modules)
- ✓ Compiled in 450ms (1097 modules)
- ✓ Compiled in 190ms (483 modules)
- ✓ Compiled in 199ms (483 modules)
- ✓ Compiled in 162ms (483 modules)
- ✓ Compiled in 540ms (1097 modules)
- ✓ Compiled /_not-found in 441ms (1088 modules)
- ✓ Compiled /_error in 494ms (1184 modules)
- GET / 500 in 3435ms
- GET / 200 in 1829ms
- ○ Compiling /api/demo/seed ...
- ✓ Compiled /api/demo/seed in 884ms (1116 modules)
- POST /api/demo/seed 200 in 1227ms
- GET / 200 in 1518ms
- ✓ Compiled /_error in 1590ms (1198 modules)
- GET / 500 in 1581ms
- GET / 500 in 79ms
- HEAD / 200 in 705ms
+ ✓ Ready in 2.4s
+ ○ Compiling /api/payments/verify ...
+ ✓ Compiled /api/payments/verify in 1218ms (312 modules)
+ POST /api/payments/verify 200 in 1974ms
+ POST /api/payments/verify 200 in 176ms
+ POST /api/payments/verify 200 in 340ms
+ POST /api/payments/verify 200 in 136ms
+ POST /api/payments/verify 400 in 25ms
+ POST /api/payments/verify 200 in 21ms
+ ✓ Compiled in 265ms (117 modules)
+ POST /api/payments/verify 200 in 450ms
+ POST /api/payments/verify 200 in 164ms
+ POST /api/payments/verify 200 in 310ms
+ POST /api/payments/verify 200 in 133ms
+ POST /api/payments/verify 400 in 14ms
+ POST /api/payments/verify 200 in 20ms

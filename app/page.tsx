@@ -6,13 +6,14 @@ import { Bell, BriefcaseBusiness, Building2, CheckCircle2, Code2, PlusCircle, Se
 import { DemoSeedButton } from "@/components/mobile/DemoSeedButton";
 import { LaunchOnboarding } from "@/components/mobile/LaunchOnboarding";
 import { MobileShell } from "@/components/mobile/MobileShell";
+import { WorkPayLogo } from "@/components/mobile/WorkPayLogo";
 import { useLanguage } from "@/components/language-provider";
 import { demoJobs, demoProfile } from "@/lib/demo/data";
 
 export default function HomePage() {
   return (
-    <MobileShell>
-      <LaunchOnboarding>
+    <LaunchOnboarding>
+      <MobileShell>
         <div className="space-y-5">
           <TopBar />
           <Hero />
@@ -22,8 +23,8 @@ export default function HomePage() {
           <RecommendedJobs />
           <DemoSeedButton />
         </div>
-      </LaunchOnboarding>
-    </MobileShell>
+      </MobileShell>
+    </LaunchOnboarding>
   );
 }
 
@@ -33,9 +34,7 @@ function TopBar() {
   return (
     <header className="flex items-center justify-between gap-3 rounded-[24px] border border-white/70 bg-white/80 px-4 py-3 shadow-[0_8px_30px_rgba(0,101,142,0.08)] backdrop-blur-xl">
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#001e2e] text-white ring-2 ring-white">
-          <ShieldCheck className="h-5 w-5 text-[#85cfff]" />
-        </div>
+        <WorkPayLogo size="sm" className="ring-2" />
         <div className="min-w-0">
           <p className="text-base font-black text-[#00658e]">WorkPay</p>
           <p className="truncate text-[11px] font-semibold text-[#64748b]">{t.home.subtitle}</p>

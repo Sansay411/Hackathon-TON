@@ -194,7 +194,20 @@ export const dictionaries = {
       prepare: "Prepare",
       fromToken: "From token",
       stonfiOmniston: "STON.fi Omniston setup is required before real quotes.",
-      swapSetupRequired: "Swap setup required"
+      swapSetupRequired: "Swap setup required",
+      escrowProof: "Escrow proof",
+      tonCenterVerify: "TONCenter verify",
+      omnistonSetupRequired: "Omniston setup required",
+      directTonBodyVerify: "WorkPay prepares a real TonConnect transfer only when ESCROW_WALLET_ADDRESS is configured. Wallet approval is not funding confirmation; TONCenter verification must match escrow, sender wallet, amount, and WorkPay reference.",
+      walletAcceptedVerify: "Wallet accepted the transaction. Paste the testnet tx hash below so TONCenter can verify it.",
+      txHashPlaceholder: "TON transaction hash",
+      verifyingTonCenter: "Verifying payment with TONCenter",
+      tonCenterVerificationFailed: "TONCenter verification failed",
+      tonCenterConfirmed: "TONCenter confirmed escrow funding proof",
+      notConfirmed: "Not confirmed",
+      tonCenterRequestFailed: "TONCenter verification request failed.",
+      verifyWithTonCenter: "Verify with TONCenter",
+      stonfiOmnistonLong: "STON.fi Omniston setup is required before requesting real quotes. WorkPay will not show fake route, fake quote, or fake swap success."
     },
     walletGate: {
       gate: "Wallet gate",
@@ -522,7 +535,20 @@ export const dictionaries = {
       prepare: "Подготовить",
       fromToken: "Токен оплаты",
       stonfiOmniston: "Требуется настройка STON.fi Omniston перед получением реальных котировок.",
-      swapSetupRequired: "Требуется настройка swap"
+      swapSetupRequired: "Требуется настройка swap",
+      escrowProof: "Подтверждение эскроу",
+      tonCenterVerify: "Проверка TONCenter",
+      omnistonSetupRequired: "Требуется настройка Omniston",
+      directTonBodyVerify: "WorkPay создаёт реальный перевод TonConnect только если задан ESCROW_WALLET_ADDRESS. Подтверждение в кошельке не является подтверждением оплаты; проверка TONCenter должна совпасть с эскроу, кошельком отправителя, суммой и ссылкой WorkPay.",
+      walletAcceptedVerify: "Кошелёк принял транзакцию. Вставьте hash транзакции testnet ниже, чтобы TONCenter мог её проверить.",
+      txHashPlaceholder: "Hash транзакции TON",
+      verifyingTonCenter: "Проверяем оплату через TONCenter",
+      tonCenterVerificationFailed: "Проверка TONCenter не удалась",
+      tonCenterConfirmed: "TONCenter подтвердил доказательство финансирования эскроу",
+      notConfirmed: "Не подтверждено",
+      tonCenterRequestFailed: "Запрос проверки TONCenter не удался.",
+      verifyWithTonCenter: "Проверить через TONCenter",
+      stonfiOmnistonLong: "Перед запросом реальных котировок требуется настройка STON.fi Omniston. WorkPay не показывает фейковый маршрут, котировку или успешный обмен."
     },
     walletGate: {
       gate: "Доступ к кошельку",

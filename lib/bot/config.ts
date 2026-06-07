@@ -39,7 +39,12 @@ export function buildMiniAppUrl(path = "/", startParam?: string, baseUrl = proce
     throw new Error("NEXT_PUBLIC_APP_URL is required to build Mini App URLs");
   }
 
-  const url = new URL(path, `${normalizeAppUrl(baseUrl)}/`);
+  const launchVersion = process.env.NEXT_PUBLIC_APP_VERSION;
+  const versionedPath = launchVersion && path === "/" ? `/launch/${launchVersion}` : path;
+  const url = new URL(versionedPath, `${normalizeAppUrl(baseUrl)}/`);
+  if (launchVersion) {
+    url.searchParams.set("v", launchVersion);
+  }
   if (startParam) {
     url.searchParams.set("startapp", startParam);
   }

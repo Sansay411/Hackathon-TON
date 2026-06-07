@@ -1,3 +1,5 @@
+import { beginCell } from "@ton/core";
+
 export type TonTransferRequest = {
   destination: string;
   amount: string;
@@ -7,6 +9,7 @@ export type TonTransferRequest = {
 };
 
 export function buildTonTransferRequest(input: TonTransferRequest) {
+  const comment = input.comment ?? "WorkPay escrow funding";
   return {
     validUntil: Math.floor(Date.now() / 1000) + 600,
     network: process.env.NEXT_PUBLIC_TON_NETWORK === "mainnet" ? "-239" : "-3",
@@ -14,10 +17,11 @@ export function buildTonTransferRequest(input: TonTransferRequest) {
     messages: [
       {
         address: input.destination,
-        amount: input.amount
+        amount: input.amount,
+        payload: buildTextCommentPayload(comment)
       }
     ],
-    workpayReference: input.comment ?? "WorkPay escrow funding"
+    workpayReference: comment
   };
 }
 
@@ -28,4 +32,8 @@ export function tonToNano(amount: string) {
   const [whole, fraction = ""] = amount.split(".");
   const normalizedFraction = fraction.padEnd(9, "0");
   return (BigInt(whole) * 1_000_000_000n + BigInt(normalizedFraction)).toString();
+}
+
+export function buildTextCommentPayload(comment: string) {
+  return beginCell().storeUint(0, 32).storeStringTail(comment).endCell().toBoc().toString("base64");
 }
