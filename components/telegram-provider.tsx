@@ -42,6 +42,7 @@ export type TelegramSyncedProfile = {
   avatarUrl: string | null;
   walletAddress: string | null;
   energyBalance: number;
+  tonBalance: number;
 };
 
 type TelegramContextValue = {

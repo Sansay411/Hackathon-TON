@@ -2,17 +2,33 @@
 
 import { useParams } from "next/navigation";
 import { ShieldAlert, Zap } from "lucide-react";
+import { useEffect, useState } from "react";
 import { MiraIntentPanel } from "@/components/mira/MiraIntentPanel";
 import { MobileShell } from "@/components/mobile/MobileShell";
-import { WalletGateLink } from "@/components/wallet-access";
+import { useWalletAccess } from "@/components/wallet-access";
 import { useLanguage } from "@/components/language-provider";
+import { useTelegram } from "@/components/telegram-provider";
 import { demoJobs } from "@/lib/demo/data";
+import type { MarketplaceJob } from "@/lib/domain/types";
 
 export default function JobDetailPage() {
   const params = useParams<{ id: string }>();
   const id = params.id;
   const { t } = useLanguage();
-  const job = demoJobs.find((item) => item.id === id) ?? demoJobs[0];
+  const [job, setJob] = useState<MarketplaceJob>(demoJobs.find((item) => item.id === id) ?? demoJobs[0]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetch(`/api/jobs/${id}`)
+      .then((response) => response.json())
+      .then((payload: { data?: { job?: MarketplaceJob } }) => {
+        if (!cancelled && payload.data?.job) setJob(payload.data.job);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
 
   return (
     <MobileShell>
@@ -52,9 +68,7 @@ export default function JobDetailPage() {
             <p className="font-black">{t.jobDetail.applyCost}</p>
           </div>
           <p className="mt-2 text-sm font-semibold leading-6 text-[#64748b]">{t.jobDetail.applyBody}</p>
-          <WalletGateLink className="mt-4 block rounded-[22px] bg-[#229ED9] px-4 py-3 text-center font-black text-white" href="/applications">
-            {t.jobDetail.applyWithEnergy}
-          </WalletGateLink>
+          <ApplyWithEnergyButton job={job} label={t.jobDetail.applyWithEnergy} />
         </section>
         <section className="rounded-[26px] border border-[#dfe3e8] bg-white p-4 shadow-sm">
           <div className="flex items-center gap-2">
@@ -65,5 +79,54 @@ export default function JobDetailPage() {
         </section>
       </div>
     </MobileShell>
+  );
+}
+
+function ApplyWithEnergyButton({ job, label }: { job: MarketplaceJob; label: string }) {
+  const { initData } = useTelegram();
+  const { isConnected, isTelegram } = useWalletAccess();
+  const [state, setState] = useState<"idle" | "loading" | "done" | "error">("idle");
+  const [message, setMessage] = useState<string | null>(null);
+
+  return (
+    <div className="mt-4 space-y-2">
+      <button
+        className="block w-full rounded-[22px] bg-[#229ED9] px-4 py-3 text-center font-black text-white disabled:bg-[#cbd5e1]"
+        disabled={state === "loading" || !isConnected || !isTelegram}
+        onClick={async () => {
+          if (!isTelegram) {
+            setMessage("Open inside Telegram to apply.");
+            return;
+          }
+          if (!isConnected) {
+            setMessage("Connect TON wallet to continue.");
+            return;
+          }
+          setState("loading");
+          setMessage(null);
+          const response = await fetch(`/api/jobs/${job.id}/apply`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              initData,
+              proposalText:
+                "I can deliver this WorkPay task with server-side checks, Telegram Mini App mobile UI, and no fake TON or STON.fi success states."
+            })
+          });
+          const payload = (await response.json()) as { ok?: boolean; data?: { energyBalance?: number }; error?: { message?: string } };
+          if (!response.ok || !payload.ok) {
+            setState("error");
+            setMessage(payload.error?.message ?? "Application could not be created.");
+            return;
+          }
+          setState("done");
+          setMessage(`Application created. Energy balance: ${payload.data?.energyBalance ?? "updated"}.`);
+        }}
+        type="button"
+      >
+        {state === "loading" ? "Applying..." : state === "done" ? "Application sent" : isConnected && isTelegram ? label : "Connect TON wallet to continue"}
+      </button>
+      {message ? <p className="rounded-2xl bg-[#f1f5f9] p-3 text-xs font-black text-[#00658e]">{message}</p> : null}
+    </div>
   );
 }

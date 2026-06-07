@@ -17,6 +17,7 @@ export type Profile = {
   completedDealsCount?: number;
   successRate?: number;
   energyBalance?: number;
+  tonBalance?: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -106,5 +107,18 @@ export type EnergyTransaction = {
   relatedJobId: string | null;
   relatedApplicationId: string | null;
   paymentId: string | null;
+  createdAt: string;
+};
+
+export type BalanceTransactionType = "ton_deposit" | "payment_spend" | "refund" | "admin_adjustment";
+
+export type BalanceTransaction = {
+  id: string;
+  profileId: string;
+  amount: string;
+  asset: string;
+  type: BalanceTransactionType;
+  reason: string;
+  txHash: string | null;
   createdAt: string;
 };

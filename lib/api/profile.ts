@@ -19,6 +19,7 @@ export type WorkPayProfile = {
   completedDealsCount: number;
   successRate: number;
   energyBalance: number;
+  tonBalance: number;
 };
 
 export type ProfileLoadResult =
@@ -91,7 +92,8 @@ export function mapProfileRow(row: Record<string, unknown>): WorkPayProfile {
     rating: Number(row.rating ?? 0),
     completedDealsCount: Number(row.completed_deals_count ?? 0),
     successRate: Number(row.success_rate ?? 0),
-    energyBalance: Number(row.energy_balance ?? 20)
+    energyBalance: Number(row.energy_balance ?? 20),
+    tonBalance: Number(row.ton_balance ?? 0)
   };
 }
 

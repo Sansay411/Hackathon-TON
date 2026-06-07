@@ -27,6 +27,7 @@ type PaymentVerifyResponse = {
   ok?: boolean;
   data?: {
     verification?: { status?: string; reason?: string };
+    balanceUpdate?: { status?: string; balanceTon?: number; message?: string } | null;
   };
   error?: { code?: string; message?: string };
 };
@@ -245,11 +246,18 @@ export function PaymentStatusCard({ dealId, amount, asset }: PaymentStatusCardPr
                   });
                   const payload = (await response.json()) as PaymentVerifyResponse;
                   const verification = payload.data?.verification;
+                  const balanceUpdate = payload.data?.balanceUpdate;
                   if (!response.ok || !payload.ok) {
                     setStatus(payload.error?.message ?? "Verification unavailable");
                     return;
                   }
-                  setStatus(verification?.status === "confirmed" ? "TONCenter confirmed payment" : verification?.reason ?? verification?.status ?? "Not confirmed");
+                  setStatus(
+                    verification?.status === "confirmed"
+                      ? balanceUpdate?.balanceTon != null
+                        ? `TONCenter confirmed. Balance: ${balanceUpdate.balanceTon} TON`
+                        : "TONCenter confirmed payment"
+                      : verification?.reason ?? verification?.status ?? "Not confirmed"
+                  );
                 } catch (error) {
                   setStatus(error instanceof Error ? error.message : "TONCenter request failed");
                 } finally {

@@ -41,107 +41,73 @@ export const demoProfile: Profile = {
   completedDealsCount: 12,
   successRate: 98,
   energyBalance: 19,
+  tonBalance: 0,
   createdAt: new Date("2026-06-01T10:00:00Z").toISOString(),
   updatedAt: new Date("2026-06-05T10:00:00Z").toISOString()
 };
 
 export const demoJobs: MarketplaceJob[] = [
   {
-    id: "workpay-miniapp-onboarding",
+    id: "demo-good-workpay-escrow",
     clientId: "demo-client",
-    title: "Design WorkPay Mini App onboarding",
+    title: "Build WorkPay TON escrow receipt flow",
     description:
-      "Create a mobile-first Telegram Mini App onboarding flow for WorkPay. The flow should collect language, role, skills, portfolio links, and explain that TON wallet connection is required for applying, accepting deals, escrow funding, and reputation.",
-    category: "Telegram Mini App",
-    budgetAmount: "120",
+      "Implement a mobile receipt screen for completed WorkPay freelance deals. The page must show the client, freelancer, amount, escrow funding transaction, release transaction, TON proof state, and Telegram share text. Payment must be shown as confirmed only after server-side TONCenter or TonAPI verification.",
+    category: "TON Payments",
+    budgetAmount: "95",
     budgetToken: "TON",
-    deadline: "2026-06-18",
+    deadline: "2026-06-20",
     status: "published",
     aiScore: 92,
     aiRisk: "low",
     deliverables: [
-      "Five-step onboarding UI for language, role, skills, portfolio, and wallet education",
-      "Responsive Telegram Mini App layout for 390px and 430px mobile widths",
-      "Final copy in English and Russian",
-      "Component handoff notes for implementation"
-    ],
-    acceptanceCriteria: [
-      "No bottom navigation is visible during onboarding",
-      "Existing Telegram profile data is reused and not requested manually",
-      "Wallet requirement is explained without claiming payment confirmation",
-      "The flow can be completed in under 90 seconds"
-    ],
-    aiMissingItems: ["Exact analytics events for onboarding completion"],
-    aiSuggestedTerms: "Limit the scope to onboarding screens and copy; implementation wiring is a separate milestone.",
-    createdAt: new Date("2026-06-05T09:00:00Z").toISOString(),
-    updatedAt: new Date("2026-06-05T09:00:00Z").toISOString()
-  },
-  {
-    id: "ton-escrow-receipt-flow",
-    clientId: "demo-client",
-    title: "Build TON escrow receipt flow",
-    description:
-      "Implement a WorkPay receipt screen for completed freelance deals. The receipt should show client, freelancer, deal amount, escrow funding transaction, release transaction, TON proof status, and share text for Telegram.",
-    category: "TON Payments",
-    budgetAmount: "95",
-    budgetToken: "TON",
-    deadline: "2026-06-19",
-    status: "published",
-    aiScore: 89,
-    aiRisk: "low",
-    deliverables: [
       "Receipt page with deal title, client, freelancer, amount, and status",
       "TON proof section for funding and release transaction hashes",
-      "Telegram share text for completed deal",
-      "Empty states for missing provider configuration"
+      "Setup-required states for missing TONCenter or escrow configuration",
+      "Telegram share text for completed deal"
     ],
     acceptanceCriteria: [
       "Wallet approval is never shown as payment confirmation",
-      "Receipt shows funded/completed only after server-side verification",
-      "Missing TONCenter or escrow config displays setup-required state",
-      "Share text includes deal id and proof status"
+      "Funded and completed states depend on server-side verification",
+      "The receipt is readable inside Telegram mobile WebView",
+      "Missing provider keys do not create fake success states"
     ],
     aiMissingItems: ["Exact wording for public share text"],
     aiSuggestedTerms: "Define proof fields and setup-required states before connecting final transaction verification.",
-    createdAt: new Date("2026-06-04T12:00:00Z").toISOString(),
-    updatedAt: new Date("2026-06-04T12:00:00Z").toISOString()
+    createdAt: new Date("2026-06-07T09:00:00Z").toISOString(),
+    updatedAt: new Date("2026-06-07T09:00:00Z").toISOString()
   },
   {
-    id: "supabase-energy-ledger",
+    id: "demo-bad-vague-bot",
     clientId: "demo-client",
-    title: "Implement Energy ledger in Supabase",
+    title: "Make my bot and app perfect urgently",
     description:
-      "Create safe server routes for Energy balance, spend checks, transaction history, and profile monthly free grant logic.",
-    category: "Backend",
-    budgetAmount: "320",
-    budgetToken: "USDT",
-    deadline: "2026-06-22",
+      "Need someone to fix everything in my Telegram bot, Mini App, TON payments, STON.fi, Mira, Supabase, design, deployment, and all bugs very fast. I will explain details later. Must be perfect and ready today.",
+    category: "Unclear Scope",
+    budgetAmount: "180",
+    budgetToken: "TON",
+    deadline: "2026-06-09",
     status: "published",
-    aiScore: 88,
-    aiRisk: "low",
+    aiScore: 31,
+    aiRisk: "high",
     deliverables: [
-      "Server route for monthly free Energy grant",
-      "Server route for application Energy spend",
-      "Energy transaction ledger with job/application references",
-      "Tests for duplicate spend and insufficient balance"
+      "Fix all integrations",
+      "Make everything work"
     ],
     acceptanceCriteria: [
-      "Energy balance cannot go below zero",
-      "Duplicate applications do not spend Energy twice",
-      "All balance changes are written server-side",
-      "Monthly grant can be claimed only once per month"
+      "No clear acceptance criteria were provided"
     ],
-    aiMissingItems: ["Exact RLS ownership model"],
-    aiSuggestedTerms: "All balance changes must be server-side and auditable.",
-    createdAt: new Date("2026-06-03T12:00:00Z").toISOString(),
-    updatedAt: new Date("2026-06-03T12:00:00Z").toISOString()
+    aiMissingItems: ["Scope boundaries", "Technical priority order", "Acceptance criteria", "Payment milestone plan", "Definition of done"],
+    aiSuggestedTerms: "Split the request into funded milestones, define exact integrations, and require client approval before any extra scope starts.",
+    createdAt: new Date("2026-06-07T10:00:00Z").toISOString(),
+    updatedAt: new Date("2026-06-07T10:00:00Z").toISOString()
   }
 ];
 
 export const demoApplications: JobApplication[] = [
   {
     id: "application-demo-1",
-    jobId: "workpay-miniapp-onboarding",
+    jobId: "demo-good-workpay-escrow",
     freelancerId: demoProfile.id,
     proposalText: "I can deliver a Telegram-native landing page with TON wallet CTA, responsive sections, and clean handoff.",
     energyCost: 1,

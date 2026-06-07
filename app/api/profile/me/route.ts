@@ -79,6 +79,7 @@ export async function POST(request: Request) {
         completedDealsCount: Number(data.completed_deals_count ?? 0),
         successRate: Number(data.success_rate ?? 0),
         energyBalance: Number(data.energy_balance ?? 20),
+        tonBalance: 0,
         createdAt: data.created_at,
         updatedAt: data.updated_at
       },

@@ -2,13 +2,16 @@
 
 import Link from "next/link";
 import type { Route } from "next";
+import { useEffect, useState } from "react";
 import { Bell, BriefcaseBusiness, Building2, CheckCircle2, Code2, PlusCircle, Search, ShieldCheck, Sparkles, WalletCards, Zap } from "lucide-react";
 import { DemoSeedButton } from "@/components/mobile/DemoSeedButton";
 import { LaunchOnboarding } from "@/components/mobile/LaunchOnboarding";
 import { MobileShell } from "@/components/mobile/MobileShell";
 import { WorkPayLogo } from "@/components/mobile/WorkPayLogo";
 import { useLanguage } from "@/components/language-provider";
+import { useTelegram } from "@/components/telegram-provider";
 import { demoJobs, demoProfile } from "@/lib/demo/data";
+import type { MarketplaceJob } from "@/lib/domain/types";
 
 export default function HomePage() {
   return (
@@ -30,6 +33,26 @@ export default function HomePage() {
 
 function TopBar() {
   const { t } = useLanguage();
+  const { initData, profile } = useTelegram();
+  const [tonBalance, setTonBalance] = useState(profile?.tonBalance ?? demoProfile.tonBalance ?? 0);
+
+  useEffect(() => {
+    setTonBalance(profile?.tonBalance ?? demoProfile.tonBalance ?? 0);
+  }, [profile?.tonBalance]);
+
+  useEffect(() => {
+    if (!initData) return;
+    let cancelled = false;
+    void fetch(`/api/wallet/balance?initData=${encodeURIComponent(initData)}`)
+      .then((response) => response.json())
+      .then((payload: { data?: { balanceTon?: number } }) => {
+        if (!cancelled && typeof payload.data?.balanceTon === "number") setTonBalance(payload.data.balanceTon);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [initData]);
 
   return (
     <header className="flex items-center justify-between gap-3 rounded-[24px] border border-white/70 bg-white/80 px-4 py-3 shadow-[0_8px_30px_rgba(0,101,142,0.08)] backdrop-blur-xl">
@@ -43,7 +66,7 @@ function TopBar() {
       <div className="flex shrink-0 items-center gap-2">
         <Link className="flex h-8 items-center gap-1.5 whitespace-nowrap rounded-full border border-[#c7e7ff] bg-[#e6f7ff] px-2.5 text-[11px] font-bold leading-none text-[#00658e]" href="/wallet">
           <WalletCards className="h-3.5 w-3.5" />
-          0 TON
+          {formatTonBalance(tonBalance)} TON
         </Link>
         <Link className="relative flex h-10 w-10 items-center justify-center rounded-full border border-[#dfe3e8] bg-white text-[#64748b]" href="/notifications">
           <Bell className="h-4 w-4" />
@@ -85,8 +108,9 @@ function Pill({ icon, label, tone = "blue" }: { icon: React.ReactNode; label: st
 
 function Stats() {
   const { t } = useLanguage();
+  const { profile } = useTelegram();
   const stats = [
-    { label: t.home.energy, value: demoProfile.energyBalance, icon: <Zap className="h-5 w-5 text-[#f79009]" /> },
+    { label: t.home.energy, value: profile?.energyBalance ?? demoProfile.energyBalance, icon: <Zap className="h-5 w-5 text-[#f79009]" /> },
     { label: t.home.activeDeals, value: 3, icon: <WalletCards className="h-5 w-5 text-[#00658e]" /> },
     { label: t.home.success, value: `${demoProfile.successRate}%`, icon: <CheckCircle2 className="h-5 w-5 text-[#12b76a]" /> }
   ];
@@ -161,6 +185,20 @@ function ActiveDeal() {
 
 function RecommendedJobs() {
   const { t } = useLanguage();
+  const [jobs, setJobs] = useState<MarketplaceJob[]>(demoJobs);
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetch("/api/jobs")
+      .then((response) => response.json())
+      .then((payload: { data?: { jobs?: MarketplaceJob[] } }) => {
+        if (!cancelled && payload.data?.jobs?.length) setJobs(payload.data.jobs);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <section className="space-y-3 pb-3">
@@ -168,7 +206,7 @@ function RecommendedJobs() {
         <h2 className="text-xl font-black text-[#171c20]">{t.home.recommendedJobs}</h2>
         <Link className="text-xs font-bold text-[#00658e]" href="/marketplace">{t.home.seeAll}</Link>
       </div>
-      {demoJobs.slice(0, 2).map((job, index) => (
+      {jobs.slice(0, 2).map((job, index) => (
         <Link className="flex items-center gap-4 rounded-2xl border border-[#dfe3e8] bg-white p-4 shadow-[0_6px_20px_rgba(0,101,142,0.06)]" href={`/jobs/${job.id}` as Route} key={job.id}>
           <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${index === 0 ? "bg-[#e6fbff] text-[#00a3be]" : "bg-[#eef7ff] text-[#00658e]"}`}>
             {index === 0 ? <Code2 className="h-5 w-5" /> : <BriefcaseBusiness className="h-5 w-5" />}
@@ -182,4 +220,8 @@ function RecommendedJobs() {
       ))}
     </section>
   );
+}
+
+function formatTonBalance(value: number) {
+  return new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(value);
 }

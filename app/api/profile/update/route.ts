@@ -50,3 +50,4 @@ export async function POST(request: Request) {
 
   return apiOk({ profile: mapProfileRow(data), auditEvent: "profile_updated" });
 }
+
