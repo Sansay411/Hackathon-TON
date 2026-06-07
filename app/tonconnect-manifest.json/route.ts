@@ -11,6 +11,6 @@ export function GET(request: Request) {
   return NextResponse.json({
     url: appUrl,
     name: "WorkPay",
-    iconUrl: `${appUrl}/workpay-icon.png?v=2`
+    iconUrl: `${appUrl}/workpay-logo.png?v=3`
   });
 }
