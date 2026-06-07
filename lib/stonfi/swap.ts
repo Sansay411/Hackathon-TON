@@ -1,16 +1,6 @@
 import { Omniston, type ChainAddress, type TonTransaction } from "@ston-fi/omniston-sdk";
 import { OMNISTON_API_URL } from "@/lib/stonfi/config";
-
-type TonConnectTransaction = {
-  validUntil: number;
-  network: -239;
-  messages: Array<{
-    address: string;
-    amount: string;
-    payload?: string;
-    stateInit?: string;
-  }>;
-};
+import { sanitizeTonConnectTransaction, type TonConnectTransaction } from "@/lib/ton/tonconnect";
 
 export type StonfiSwapBuildRequest = {
   quoteId: string;
@@ -67,16 +57,15 @@ function tonAddress(address: string): ChainAddress {
 }
 
 function toTonConnectTransaction(transaction: TonTransaction): TonConnectTransaction {
-  return {
+  return sanitizeTonConnectTransaction({
     validUntil: Math.floor(Date.now() / 1000) + 600,
-    network: -239,
     messages: transaction.messages.map((message) => ({
       address: message.targetAddress,
       amount: message.sendAmount,
       payload: hexToBase64(message.payload),
       stateInit: message.jettonWalletStateInit ? hexToBase64(message.jettonWalletStateInit) : undefined
     }))
-  };
+  });
 }
 
 function hexToBase64(value: string): string | undefined {

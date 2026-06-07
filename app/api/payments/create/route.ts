@@ -33,7 +33,7 @@ export async function POST(request: Request) {
 
   const escrowWallet = process.env.ESCROW_WALLET_ADDRESS;
   if (!escrowWallet) {
-    return apiError("setup_required", "ESCROW_WALLET_ADDRESS is required before preparing a real TON payment.", 503);
+    return apiError("setup_required", "ESCROW_WALLET_ADDRESS is not configured. Direct TON payment cannot be created.", 503);
   }
 
   const amountNano = tonToNano(parsed.data.amount);

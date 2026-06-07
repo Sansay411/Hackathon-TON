@@ -1,4 +1,4 @@
-import { beginCell } from "@ton/core";
+import { createDirectTonTransferTransaction, createTextCommentPayload } from "@/lib/ton/tonconnect";
 
 export type TonTransferRequest = {
   destination: string;
@@ -9,17 +9,11 @@ export type TonTransferRequest = {
 
 export function buildTonTransferRequest(input: TonTransferRequest) {
   const comment = input.comment ?? "WorkPay escrow funding";
-  return {
-    validUntil: Math.floor(Date.now() / 1000) + 600,
-    network: process.env.NEXT_PUBLIC_TON_NETWORK === "mainnet" ? -239 : -3,
-    messages: [
-      {
-        address: input.destination,
-        amount: input.amount,
-        payload: buildTextCommentPayload(comment)
-      }
-    ]
-  };
+  return createDirectTonTransferTransaction({
+    address: input.destination,
+    amountNano: input.amount,
+    comment
+  });
 }
 
 export function tonToNano(amount: string) {
@@ -32,5 +26,5 @@ export function tonToNano(amount: string) {
 }
 
 export function buildTextCommentPayload(comment: string) {
-  return beginCell().storeUint(0, 32).storeStringTail(comment).endCell().toBoc().toString("base64");
+  return createTextCommentPayload(comment);
 }

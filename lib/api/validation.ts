@@ -50,8 +50,7 @@ export const paymentVerifySchema = z.object({
   initData: z.string().optional(),
   dealId: z.string().min(1),
   txHash: z.string().min(40).max(200),
-  expectedAmount: z.string().regex(/^\d+(\.\d{1,9})?$/),
-  expectedAsset: z.string().min(2).max(20).default("TON"),
+  walletAddress: z.string().min(20).optional(),
   network: z.enum(["testnet", "mainnet"]).default("testnet")
 });
 

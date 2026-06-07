@@ -35,12 +35,14 @@ export async function POST(request: Request) {
   }
 
   const verifier = new ProviderBackedTonPaymentVerifier();
+  const expectedAmount = getExpectedDemoAmount(parsed.data.dealId);
+  const expectedAsset = "TON";
   const result = await verifier.verify({
     txHash: parsed.data.txHash,
     expectedEscrowWallet: escrowWallet,
-    expectedSenderWallet: profileResult.profile.walletAddress,
-    expectedAmount: parsed.data.expectedAmount,
-    expectedAsset: parsed.data.expectedAsset,
+    expectedSenderWallet: parsed.data.walletAddress ?? profileResult.profile.walletAddress,
+    expectedAmount,
+    expectedAsset,
     expectedComment: `workpay:${parsed.data.dealId}`,
     network: parsed.data.network
   });
@@ -52,8 +54,15 @@ export async function POST(request: Request) {
   return apiOk({
     dealId: parsed.data.dealId,
     network: parsed.data.network,
-    expectedAmount: parsed.data.expectedAmount,
-    expectedAsset: parsed.data.expectedAsset,
+    expectedAmount,
+    expectedAsset,
     verification: result
   });
+}
+
+function getExpectedDemoAmount(dealId: string): string {
+  if (dealId === "wallet-readiness") {
+    return "1";
+  }
+  return "20";
 }
