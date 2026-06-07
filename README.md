@@ -1,195 +1,213 @@
 # WorkPay
 
-WorkPay is a Telegram Mini App for secure freelance deals on TON.
+**TON-native freelance escrow inside Telegram.**
 
-Telegram is the interface layer, Mira is the intelligence layer, STON.fi is the liquidity layer, and TON is the trust layer. Deals are only active when they can be funded, verified, settled, and later used for reputation through TON-native flows.
+WorkPay is a Telegram Mini App for hackathon demos where Telegram provides identity and the mobile interface, TON provides wallet identity and payment proof, Supabase persists product data, Mira reviews deal risk, and STON.fi is the planned liquidity layer for token swap settlement.
 
-The hackathon version adds a marketplace, onboarding, freelancer profiles, Energy monetization, job applications, safe API contracts, and payment preparation without fake crypto confirmations.
+Current production Mini App:
 
-## Architecture
+- Telegram bot: `@GetWorkPayBot`
+- Mini App URL: `https://workpay-ton-fixed.vercel.app/launch/3b983d8`
+- Production app: `https://workpay-ton-fixed.vercel.app`
+- TonConnect manifest: `https://workpay-ton-fixed.vercel.app/tonconnect-manifest.json`
 
-- Frontend: Next.js 15 App Router, TypeScript, TailwindCSS, shadcn-style components, Telegram Mini App runtime, TonConnect UI React, React Query.
-- Backend: Next.js Route Handlers.
-- Database: Supabase PostgreSQL, Storage-ready schema, Realtime publication.
-- Payments: TON-first interfaces for funding verification and escrow release.
-- Liquidity: STON.fi Omniston adapter boundary for future quote, swap, and trade tracking.
-- AI: Mira adapter boundary with a mock provider for local review shape only.
-- Monetization: Energy balance and transactions for freelancer applications.
-- Marketplace: jobs, applications, client acceptance, and deal creation architecture.
+## English
 
-## Database
+### What WorkPay Demonstrates
 
-The foundation migration is in `supabase/migrations/20260604170000_workpay_foundation.sql`.
+WorkPay turns a Telegram bot into a real freelance workflow:
 
-It creates:
+- Telegram Mini App launch and verified Telegram profile sync
+- TON wallet connection through TonConnect
+- Wallet-gated critical actions
+- Marketplace jobs and applications
+- Energy spending for applications
+- Client acceptance and deal creation architecture
+- Honest escrow payment preparation
+- TONCenter-backed verification boundary
+- Mira/DeepSeek AI review for job risk
+- STON.fi Omniston readiness without fake swap success
+- Supabase-backed persistent profiles
 
-- `profiles`
-- `deals`
-- `payments`
-- `deliveries`
-- `deal_events`
+### Product Principles
 
-Deal status transitions are enforced in application code through `lib/domain/deal-status.ts`. Database-level transition enforcement should be added once the final write path is locked.
+- Telegram is the interface and identity source.
+- TON is the wallet, payment proof, funding, settlement, and reputation layer.
+- Supabase stores profiles, jobs, applications, deals, and audit data.
+- Mira is the AI review and risk layer.
+- STON.fi is the token swap and liquidity layer.
+- No frontend-only payment confirmation.
+- No fake TON funding.
+- No fake STON.fi swap success.
+- No private keys, bot tokens, service role keys, or wallet mnemonics in the frontend.
 
-## Supabase Setup
+### Current Demo Status
 
-1. Create a Supabase project.
-2. Copy `.env.example` to `.env.local`.
-3. Fill `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY`.
-4. Apply migrations with Supabase CLI or the dashboard SQL editor.
-5. Keep RLS enabled on all public tables.
+**Real and working:**
 
-The initial RLS policies are broad foundation policies. Before production, bind Telegram identity to a Supabase-authenticated profile and replace broad policies with participant-scoped policies.
+- Telegram bot opens the Mini App.
+- Telegram `initData` is verified server-side.
+- Telegram profile fields are synced to Supabase.
+- TonConnect provider and manifest are public and reachable.
+- Wallet address can be saved to the user profile.
+- Critical API routes enforce wallet gates.
+- Direct TON payment preparation creates a real TonConnect transaction when escrow env is configured.
+- TON transaction payload includes a WorkPay text comment reference.
+- TONCenter verification route checks Telegram identity, saved wallet, escrow destination, sender wallet, amount, and `workpay:<dealId>` reference.
+- Mira review route returns structured review output when DeepSeek/Mira credentials are configured.
+- Production Vercel deployment is public and Telegram points to the current version.
 
-## Telegram Mini App Setup
+**Setup-required by design:**
 
-1. Create a Telegram bot with BotFather.
-2. Configure the Mini App URL to the deployed Vercel URL.
-3. Set `TELEGRAM_BOT_TOKEN`.
-4. The client extracts `initData` only. Server verification happens in `app/api/auth/telegram/route.ts`.
-5. Do not trust `initDataUnsafe` for authorization.
-6. `NEXT_PUBLIC_TONCONNECT_MANIFEST_URL` should be the full manifest URL when set. If omitted, the app falls back to `NEXT_PUBLIC_APP_URL/tonconnect-manifest.json`.
+- Real escrow funding requires a testnet escrow wallet and real transaction hash.
+- STON.fi Omniston quote, swap build, and trade tracking require full provider wiring.
+- Mainnet is disabled unless `NEXT_PUBLIC_ENABLE_MAINNET=true`.
+- Smart-contract escrow custody is not claimed in this demo build.
 
-## Telegram Bot Setup
+### Architecture
 
-WorkPay includes a grammY bot layer for `@GetWorkPayBot`.
+- Frontend: Next.js 15 App Router, TypeScript, TailwindCSS, shadcn-style UI
+- Telegram: Telegram Mini Apps WebApp runtime, grammY bot
+- Wallet: TonConnect UI React
+- TON: `@ton/core`, TONCenter verification boundary
+- Liquidity: STON.fi Omniston package boundary
+- AI: Mira provider boundary with DeepSeek-compatible adapter
+- Database: Supabase PostgreSQL
+- Deployment: Vercel
 
-Environment variables:
+### Core Routes
+
+- `/launch/[version]` - Telegram cache-busted Mini App entry
+- `/` - home
+- `/marketplace` - jobs marketplace
+- `/jobs/[id]` - job detail and application flow
+- `/jobs/new` - create job
+- `/applications` - applications
+- `/deals` - deals dashboard
+- `/deals/[id]` - deal timeline and payment panel
+- `/deals/[id]/receipt` - receipt
+- `/wallet` - TonConnect and payment readiness
+- `/profile` - Telegram profile, wallet, reputation
+- `/tonconnect-manifest.json` - TonConnect manifest
+
+### Environment
+
+Copy `.env.example` to `.env.local`.
 
 ```bash
+NEXT_PUBLIC_APP_URL=
+NEXT_PUBLIC_APP_VERSION=
+NEXT_PUBLIC_DEMO_MODE=true
+NEXT_PUBLIC_TON_NETWORK=testnet
+NEXT_PUBLIC_ENABLE_MAINNET=false
+NEXT_PUBLIC_TONCONNECT_MANIFEST_URL=
+
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+
 TELEGRAM_BOT_TOKEN=
 TELEGRAM_BOT_USERNAME=GetWorkPayBot
-NEXT_PUBLIC_APP_URL=https://your-domain.com
 BOT_WEBHOOK_SECRET=
+
+ESCROW_WALLET_ADDRESS=
+TONAPI_KEY=
+TONCENTER_API_KEY=
+
+STONFI_API_URL=
+STONFI_ENABLED=false
+
+MIRA_API_URL=
+MIRA_API_KEY=
+DEEPSEEK_API_KEY=
+DEEPSEEK_BASE_URL=https://api.deepseek.com
+DEEPSEEK_MODEL=deepseek-v4-flash
 ```
 
-Local development uses long polling:
+### Local Development
 
-```bash
-npm run bot:dev
-```
-
-Production requires a deployed HTTPS domain:
-
-```bash
-npm run bot:setup
-```
-
-The bot is intentionally minimal. `/start` and `/help` launch the Mini App; product logic stays inside WorkPay. The setup script configures bot commands, sets the chat menu button to `Open WorkPay`, and sets the webhook to `NEXT_PUBLIC_APP_URL/api/bot/webhook`.
-
-## Hackathon Demo Flow
-
-See `docs/demo-script.md`.
-
-Core routes:
-
-- `/` onboarding and home
-- `/marketplace` jobs
-- `/jobs/[id]` job detail and apply architecture
-- `/jobs/new` create job
-- `/applications` freelancer applications
-- `/deals` deals dashboard
-- `/deals/[id]` deal/payment timeline
-- `/energy` Energy balance and packages
-- `/wallet` TON wallet/payment readiness
-- `/profile` profile and reputation
-
-Manual BotFather steps:
-
-1. Open `@BotFather`.
-2. Select `@GetWorkPayBot`.
-3. Open Bot Settings.
-4. Configure Mini App.
-5. Enable Mini App.
-6. Set Mini App URL to the production HTTPS domain.
-7. Set menu button to `WorkPay` if not done by script.
-8. Add bot picture.
-9. Add description and commands.
-
-The Main Mini App profile button still needs to be configured manually in BotFather.
-
-See `docs/telegram-bot.md` for the command list, webhook setup, local development, production deployment, and troubleshooting.
-
-## Local Development
+Use `npm.cmd` on Windows.
 
 ```bash
 npm.cmd install
 npm.cmd run dev
+```
+
+Local bot polling:
+
+```bash
+npm.cmd run bot:dev
+```
+
+Production bot setup:
+
+```bash
 npm.cmd run bot:setup
 ```
 
-Use `npm.cmd` on Windows because PowerShell may block `npm.ps1`. Telegram-facing Mini App buttons require a public HTTPS URL, so local Telegram testing needs a tunnel or deployed domain in `NEXT_PUBLIC_APP_URL`.
+Telegram Mini Apps require a public HTTPS URL. Use Vercel or a tunnel for Telegram-facing tests.
 
-## TonConnect Setup
+### Telegram Setup
 
-`/tonconnect-manifest.json` is served by the app and must be publicly reachable. Set:
+1. Create a bot in BotFather.
+2. Set `TELEGRAM_BOT_TOKEN`.
+3. Deploy the app to HTTPS.
+4. Set `NEXT_PUBLIC_APP_URL`.
+5. Run `npm.cmd run bot:setup`.
+6. Configure the Mini App URL in BotFather if needed.
+7. Open `@GetWorkPayBot` and tap **Open WorkPay**.
+
+### TON Setup
+
+TonConnect requires:
+
+- public app URL
+- public manifest URL
+- public icon URL
+- client-side TonConnect provider
+- testnet wallet for demo payments
+
+Direct TON payment requires:
 
 ```bash
-NEXT_PUBLIC_APP_URL=https://your-domain.example
-NEXT_PUBLIC_TONCONNECT_MANIFEST_URL=https://your-domain.example/tonconnect-manifest.json
 NEXT_PUBLIC_TON_NETWORK=testnet
 NEXT_PUBLIC_ENABLE_MAINNET=false
-```
-
-The manifest uses `public/workpay-icon.png`. Wallet acceptance of a transaction is not payment confirmation; WorkPay only treats payment as funded after backend verification.
-
-## Testnet Payment Setup
-
-Direct TON payment preparation requires:
-
-```bash
 ESCROW_WALLET_ADDRESS=
 TONCENTER_API_KEY=
-TONAPI_KEY=
 ```
 
-If `ESCROW_WALLET_ADDRESS` is missing, `/api/payments/create` returns `setup_required`. If provider keys are missing, verification remains `setup_required`. Mainnet transaction generation is disabled unless `NEXT_PUBLIC_ENABLE_MAINNET=true`.
+Payment flow:
 
-## Known Limitations
+1. User connects TON wallet.
+2. Server prepares a TonConnect transaction.
+3. Wallet signs/sends the transaction.
+4. User provides tx hash for verification.
+5. Backend checks the transaction through TONCenter.
+6. Deal is treated as funded only after server-side verification.
 
-- STON.fi Omniston quote/swap/tracking remains setup-required until `@ston-fi/omniston-sdk-react`, `@ston-fi/api`, `@ton/core`, and provider config are wired.
-- Real TON payment verification requires TonAPI or Toncenter provider setup.
-- Real Mira is used only when `MIRA_API_KEY` or `DEEPSEEK_API_KEY` is configured; otherwise the development provider is labeled honestly.
-- Supabase RLS policies are still broad foundation policies and should be tightened before production.
+### STON.fi Setup
 
-## Security Notes
+The project includes STON.fi readiness boundaries and official package dependencies:
 
-- `TELEGRAM_BOT_TOKEN`, `BOT_WEBHOOK_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`, `TONAPI_KEY`, `TONCENTER_API_KEY`, and `MIRA_API_KEY` are server-side only.
-- Do not expose wallet private keys or mnemonics. WorkPay uses TonConnect and never touches user keys.
-- Do not mark payments funded from frontend wallet callbacks; verify destination, sender, amount, reference, network, uniqueness, and finality on the backend.
+- `@ston-fi/omniston-sdk-react`
+- `@ston-fi/api`
+- `@ton/core`
+- `@tonconnect/ui-react`
 
-## TON Architecture
+Current behavior is intentionally honest:
 
-TON runs in testnet by default through `NEXT_PUBLIC_TON_NETWORK=testnet`.
+- no fake quote
+- no fake route
+- no fake swap transaction
+- no fake settlement confirmation
 
-The project includes:
+Set `STONFI_ENABLED=true` only after a real Omniston quote/build/tracking implementation is wired.
 
-- `lib/ton/types.ts`
-- `lib/ton/network.ts`
-- `lib/ton/address.ts`
-- `lib/ton/transactions.ts`
-- `lib/payments/paymentVerifier.ts`
-- `lib/payments/escrowRelease.ts`
+### Mira / AI Setup
 
-No fake blockchain verification is implemented. Real verification should use TonAPI or Toncenter to confirm transaction hash, network, source, destination, amount, asset, finality, and replay safety.
+Mira review is exposed through a provider boundary.
 
-## STON.fi Architecture
-
-`lib/stonfi/types.ts` defines the liquidity provider interface for:
-
-- quote
-- swap creation
-- trade tracking
-
-No fake swaps are implemented.
-
-## Mira Architecture
-
-`lib/mira/types.ts` defines `MiraProvider`.
-
-`MockMiraProvider` returns a typed local review shape for UI development.
-
-`DeepSeekMiraProvider` is the current real review adapter behind the Mira boundary. It uses the DeepSeek OpenAI-compatible API with `DEEPSEEK_MODEL=deepseek-v4-flash` by default. Configure it server-side only:
+For the current demo, DeepSeek-compatible review is configured server-side:
 
 ```bash
 DEEPSEEK_API_KEY=
@@ -197,27 +215,150 @@ DEEPSEEK_BASE_URL=https://api.deepseek.com
 DEEPSEEK_MODEL=deepseek-v4-flash
 ```
 
-## Roadmap
+The job review route returns structured risk output:
 
-- Bind Telegram auth to Supabase profiles.
-- Add participant-scoped RLS.
-- Replace sample UI data with Supabase queries.
-- Implement TonAPI or Toncenter verification.
-- Add smart contract escrow.
-- Implement STON.fi Omniston quotes and swaps.
-- Implement Mira real review provider.
-- Add on-chain reputation from completed deals.
+- clarity score
+- risk level
+- missing items
+- dispute risks
+- suggested terms
 
-## Security Considerations
+### Verification Commands
 
-- Never expose `SUPABASE_SERVICE_ROLE_KEY` to the browser.
-- Never trust Telegram `initDataUnsafe`.
-- Never manually confirm payments.
-- Never mark deals funded without verified TON transaction data.
-- Keep testnet as the default until production escrow is audited.
-- Never trust frontend Energy costs or balances.
-- Never allow duplicate applications to spend Energy twice.
+```bash
+npm.cmd test
+npm.cmd run typecheck
+npm.cmd run build
+```
 
-## Future Smart Contract Escrow
+### Security Notes
 
-The current foundation prepares for escrow but does not claim custody logic. Production escrow should use audited TON smart contracts, deterministic escrow addresses or contract instances, formal release/refund paths, and chain-derived state as the source of truth.
+- Never expose `SUPABASE_SERVICE_ROLE_KEY`.
+- Never expose `TELEGRAM_BOT_TOKEN`.
+- Never expose wallet private keys or mnemonics.
+- Never trust `initDataUnsafe` on the backend.
+- Never mark deals funded from a frontend wallet callback.
+- Keep mainnet disabled until escrow and verification are production-ready.
+
+### Known Demo Risks
+
+- STON.fi Omniston is package-ready but not fully wired to quote/build/track trades.
+- TONCenter verification requires a real testnet transaction hash.
+- Supabase RLS should be tightened before production.
+- npm audit currently reports dependency warnings that do not block the demo build.
+
+---
+
+# WorkPay RU
+
+**TON-native escrow для фриланса внутри Telegram.**
+
+WorkPay - это Telegram Mini App для хакатон-демо, где Telegram отвечает за профиль и интерфейс, TON - за кошелек и платежное доказательство, Supabase - за постоянные данные, Mira - за AI-риск сделки, а STON.fi - за будущий swap/liquidity слой.
+
+Текущий production Mini App:
+
+- Telegram bot: `@GetWorkPayBot`
+- Mini App URL: `https://workpay-ton-fixed.vercel.app/launch/3b983d8`
+- Production app: `https://workpay-ton-fixed.vercel.app`
+- TonConnect manifest: `https://workpay-ton-fixed.vercel.app/tonconnect-manifest.json`
+
+## Что Показывает Демо
+
+WorkPay показывает полноценный путь фриланс-сделки:
+
+- запуск Mini App из Telegram-бота;
+- серверная проверка Telegram `initData`;
+- синхронизация Telegram-профиля в Supabase;
+- подключение TON-кошелька через TonConnect;
+- блокировка критичных действий без кошелька;
+- маркетплейс задач;
+- отклики фрилансеров;
+- Energy списание при отклике;
+- принятие отклика клиентом и создание сделки;
+- честная подготовка TON-платежа;
+- TONCenter verify boundary;
+- AI review через Mira/DeepSeek;
+- STON.fi readiness без фейкового swap success.
+
+## Принципы Продукта
+
+- Telegram - интерфейс и источник личности.
+- TON - кошелек, платежное доказательство, funding, settlement и reputation.
+- Supabase - хранение профилей, задач, откликов, сделок и audit data.
+- Mira - AI review и risk layer.
+- STON.fi - swap и liquidity layer.
+- Нельзя подтверждать оплату только по callback из кошелька.
+- Нельзя фейково подтверждать TON funding.
+- Нельзя фейково подтверждать STON.fi swap.
+- Нельзя отдавать секреты на фронт.
+
+## Что Сейчас Реально Работает
+
+- Бот `@GetWorkPayBot` открывает Mini App.
+- Telegram menu указывает на свежую версию `/launch/3b983d8`.
+- Webhook настроен на production.
+- Telegram profile sync проходит через серверную проверку.
+- Supabase сохраняет профиль.
+- TonConnect manifest публичный и корректный.
+- Кошелек можно подключить и сохранить в профиль.
+- API critical actions требуют кошелек.
+- Direct TON payment создает реальный TonConnect transaction, если настроен escrow.
+- TON transaction содержит comment payload `workpay:<dealId>`.
+- `/api/payments/verify` проверяет Telegram user, saved wallet, escrow, sender, amount и reference.
+- Mira review route возвращает структурированный анализ риска.
+
+## Что Требует Настройки
+
+- Реальная проверка funding требует testnet transaction hash.
+- STON.fi Omniston quote/build/track еще нужно полностью довязать к provider API.
+- Mainnet выключен по умолчанию.
+- Smart-contract escrow custody не заявлен в этой демо-версии.
+
+## Как Запустить Локально
+
+```bash
+npm.cmd install
+npm.cmd run dev
+```
+
+Проверки:
+
+```bash
+npm.cmd test
+npm.cmd run typecheck
+npm.cmd run build
+```
+
+## Как Проверить В Telegram
+
+1. Открыть `@GetWorkPayBot`.
+2. Нажать **Open WorkPay**.
+3. Должен открыться URL `/launch/3b983d8`.
+4. Пройти первый опрос.
+5. Проверить, что профиль берет имя/avatar/username из Telegram.
+6. Подключить TON wallet.
+7. Открыть сделку и payment panel.
+8. Для тестового TON payment нужен настроенный `ESCROW_WALLET_ADDRESS`.
+9. После отправки транзакции вставить tx hash и проверить через TONCenter.
+
+## Безопасность
+
+- `TELEGRAM_BOT_TOKEN` только на сервере.
+- `SUPABASE_SERVICE_ROLE_KEY` только на сервере.
+- `TONCENTER_API_KEY` только на сервере.
+- Wallet private keys и mnemonics никогда не используются WorkPay.
+- Backend не доверяет frontend payment status.
+- Telegram `initDataUnsafe` не используется для backend authorization.
+
+## Hackathon Demo Summary
+
+WorkPay уже можно показывать как честный Telegram + TON Mini App сервис:
+
+- identity из Telegram;
+- wallet через TON;
+- профиль в Supabase;
+- AI review через Mira boundary;
+- TON payment readiness через TonConnect;
+- TONCenter verification boundary;
+- STON.fi readiness без фейковых успехов.
+
