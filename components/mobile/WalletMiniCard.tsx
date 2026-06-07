@@ -5,10 +5,12 @@ import { WalletCards } from "lucide-react";
 import { truncateTonAddress } from "@/lib/ton/address";
 import { getTonNetwork } from "@/lib/ton/network";
 import { useTelegram } from "@/components/telegram-provider";
+import { useLanguage } from "@/components/language-provider";
 
 export function WalletMiniCard() {
   const wallet = useTonWallet();
   const { isTelegram } = useTelegram();
+  const { t } = useLanguage();
   const network = getTonNetwork();
 
   return (
@@ -18,12 +20,12 @@ export function WalletMiniCard() {
           <WalletCards className="h-5 w-5" />
         </div>
         <div>
-          <p className="text-xs font-black text-[#64748b]">TON wallet</p>
-          <p className="text-sm font-black">{wallet ? truncateTonAddress(wallet.account.address) : "Not connected"}</p>
+          <p className="text-xs font-black text-[#64748b]">{t.wallet.tonWallet}</p>
+          <p className="text-sm font-black">{wallet ? truncateTonAddress(wallet.account.address) : t.wallet.notConnected}</p>
           <p className="text-[11px] font-semibold text-[#64748b]">
-            {wallet ? `${network} connected` : `${network} setup required for active deal actions`}
+            {wallet ? `${network} ${t.walletMini.connectedSuffix}` : `${network} ${t.walletMini.setupRequired}`}
           </p>
-          <p className="text-[11px] font-black text-[#64748b]">{isTelegram ? "Inside Telegram" : "Outside Telegram"}</p>
+          <p className="text-[11px] font-black text-[#64748b]">{isTelegram ? t.walletGate.insideTelegram : t.walletGate.outsideTelegram}</p>
         </div>
       </div>
     </div>

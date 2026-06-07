@@ -119,13 +119,13 @@ function QuickActions() {
 function ActionButton({ href, icon, label, primary = false }: { href: Route; icon: React.ReactNode; label: string; primary?: boolean }) {
   return (
     <Link
-      className={`inline-flex h-11 min-w-0 items-center justify-center gap-1.5 rounded-xl px-2 text-[12px] font-bold shadow-sm ${
+      className={`flex min-h-[64px] min-w-0 flex-col items-center justify-center gap-1.5 rounded-xl px-2 py-2 text-center text-[12px] font-bold leading-tight shadow-sm ${
         primary ? "bg-[#00658e] text-white shadow-[0_8px_20px_rgba(0,101,142,0.18)]" : "border border-[#bec8d1] bg-white text-[#171c20]"
       }`}
       href={href}
     >
-      {icon}
-      <span className="truncate">{label}</span>
+      <span className="shrink-0">{icon}</span>
+      <span className="line-clamp-2 w-full break-words">{label}</span>
     </Link>
   );
 }
@@ -143,11 +143,11 @@ function ActiveDeal() {
               <span className="h-2 w-2 rounded-full bg-[#00658e]" />
               <p className="text-[10px] font-black uppercase tracking-[0.5px] text-[#00658e]">{t.home.inProgress}</p>
             </div>
-            <h3 className="mt-2 max-w-full truncate text-base font-black text-[#171c20]">Landing Page Design & Dev</h3>
+            <h3 className="mt-2 max-w-full truncate text-base font-black text-[#171c20]">{t.home.activeDealName}</h3>
             <p className="mt-1 text-sm font-medium text-[#64748b]">{t.home.dueIn3Days}</p>
           </div>
           <div className="w-[94px] shrink-0 text-right">
-            <p className="text-sm font-black text-[#171c20]">20.00 TON</p>
+            <p className="text-sm font-black text-[#171c20]">20 TON</p>
             <p className="text-[10px] font-bold text-[#64748b]">{t.home.escrowed}</p>
           </div>
         </div>

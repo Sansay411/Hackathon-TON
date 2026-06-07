@@ -1,7 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import type { Route } from "next";
 import { ArrowRight, Clock3 } from "lucide-react";
 import { AiRiskBadge } from "@/components/mobile/AiRiskBadge";
+import { useLanguage } from "@/components/language-provider";
 
 type DealListCardProps = {
   dealId: string;
@@ -13,6 +16,7 @@ type DealListCardProps = {
 };
 
 export function DealListCard({ dealId, title, description, amount, status, risk }: DealListCardProps) {
+  const { t } = useLanguage();
   const href = `/deals/${dealId}` as Route;
 
   return (
@@ -31,7 +35,7 @@ export function DealListCard({ dealId, title, description, amount, status, risk 
       <div className="mt-4 flex items-center justify-between rounded-2xl bg-[#f6faff] px-3 py-2 text-xs font-bold text-[#64748b]">
         <span className="flex items-center gap-2">
           <Clock3 className="h-3.5 w-3.5" />
-          UI placeholder
+          {t.dealList.eventHint}
         </span>
         <ArrowRight className="h-4 w-4 text-[#229ED9]" />
       </div>

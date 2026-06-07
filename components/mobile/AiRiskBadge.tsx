@@ -1,3 +1,7 @@
+"use client";
+
+import { useLanguage } from "@/components/language-provider";
+
 type Risk = "Low" | "Medium" | "High";
 
 const riskStyles: Record<Risk, string> = {
@@ -7,5 +11,7 @@ const riskStyles: Record<Risk, string> = {
 };
 
 export function AiRiskBadge({ risk }: { risk: Risk }) {
-  return <span className={`rounded-full px-3 py-1 text-xs font-black ring-1 ${riskStyles[risk]}`}>AI Risk: {risk}</span>;
+  const { t } = useLanguage();
+  const riskLabel = t.deals.risks[risk.toLowerCase() as "low" | "medium" | "high"];
+  return <span className={`rounded-full px-3 py-1 text-xs font-black ring-1 ${riskStyles[risk]}`}>{t.badges.aiRiskPrefix} {riskLabel}</span>;
 }

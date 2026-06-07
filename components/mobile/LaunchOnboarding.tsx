@@ -96,7 +96,15 @@ export function LaunchOnboarding({ children }: { children: React.ReactNode }) {
             <p className="text-sm font-black text-[#00658e]">{t.onboarding.setup}</p>
             <h1 className="truncate text-2xl font-black text-[#171c20]">{displayName}</h1>
             <p className="text-xs font-semibold text-[#64748b]">
-              {isTelegram ? (authStatus === "verified" ? t.onboarding.verified : t.onboarding.verifying) : t.onboarding.openInTelegram}
+              {!isTelegram
+                ? t.onboarding.openInTelegram
+                : authStatus === "verified"
+                  ? t.onboarding.verified
+                  : authStatus === "verifying"
+                    ? t.onboarding.verifying
+                    : authStatus === "error"
+                      ? t.onboarding.verifyError
+                      : t.onboarding.verifyUnavailable}
             </p>
           </div>
           </div>
