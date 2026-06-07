@@ -48,14 +48,14 @@ export function PaymentStatusCard({ dealId, amount, asset }: PaymentStatusCardPr
         </button>
       </div>
       <div className="mt-5 grid gap-3">
-        <StatusRow icon={<WalletCards className="h-4 w-4" />} label="Direct TON payment" value="Backend prepared only when escrow is configured" />
-        <StatusRow icon={<ArrowLeftRight className="h-4 w-4" />} label="STON.fi swap payment" value="STON.fi setup required" />
+        <StatusRow icon={<WalletCards className="h-4 w-4" />} label="Direct TON payment" value="Ожидает настройки escrow" />
+        <StatusRow icon={<ArrowLeftRight className="h-4 w-4" />} label="STON.fi swap payment" value="Требуется настройка STON.fi" />
         <StatusRow icon={<LockKeyhole className="h-4 w-4" />} label="Escrow status" value={status} />
       </div>
       {tab === "direct" ? (
         <div className="mt-4 rounded-[20px] bg-[#f6faff] p-3 text-xs font-semibold leading-5 text-[#64748b]">
           <p className="font-black text-[#171c20]">Direct TON</p>
-          <p>Creates a real TonConnect transaction only when `ESCROW_WALLET_ADDRESS` is configured. Wallet approval is not funding confirmation.</p>
+          <p>Оплата через TON будет доступна после подключения тестового escrow-кошелька. После подписи в кошельке WorkPay отдельно проверит транзакцию в сети.</p>
           <WalletGateButton
             className="mt-3 w-full rounded-2xl bg-[#229ED9] px-4 py-3 text-sm font-black text-white disabled:cursor-not-allowed disabled:opacity-60"
             connectedLabel={busy ? "Opening wallet..." : `Prepare ${amount} ${asset}`}
@@ -70,13 +70,13 @@ export function PaymentStatusCard({ dealId, amount, asset }: PaymentStatusCardPr
                 });
                 const payload = (await response.json()) as PaymentCreateResponse;
                 if (!response.ok || !payload.ok || !payload.data?.transaction) {
-                  setStatus(payload.error?.message ?? "Payment setup required");
+                  setStatus(payload.error?.message ?? "Требуется настройка оплаты");
                   return;
                 }
                 await tonConnectUI.sendTransaction(payload.data.transaction);
-                setStatus("Wallet accepted transaction. Backend verification still required.");
+                setStatus("Кошелек принял транзакцию. WorkPay проверяет оплату отдельно.");
               } catch (error) {
-                setStatus(error instanceof Error ? error.message : "Wallet rejected or failed transaction.");
+                setStatus(error instanceof Error ? error.message : "Кошелек отклонил или не отправил транзакцию.");
               } finally {
                 setBusy(false);
               }
@@ -94,10 +94,10 @@ export function PaymentStatusCard({ dealId, amount, asset }: PaymentStatusCardPr
               </select>
             </label>
             <div className="rounded-2xl bg-[#f6faff] p-3 text-xs font-semibold text-[#64748b]">
-              STON.fi setup required. Install and configure Omniston provider before requesting real quotes.
+              Требуется настройка STON.fi Omniston перед получением реальных котировок.
             </div>
             <button className="w-full cursor-not-allowed rounded-2xl bg-[#dfe3e8] px-4 py-3 text-sm font-black text-[#64748b]" disabled type="button">
-              Swap setup required
+              Требуется настройка swap
             </button>
           </div>
         </div>
