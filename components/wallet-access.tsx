@@ -5,12 +5,14 @@ import type { Route } from "next";
 import type { ReactNode } from "react";
 import { useTonWallet } from "@tonconnect/ui-react";
 import { useTelegram } from "@/components/telegram-provider";
+import { useLanguage } from "@/components/language-provider";
 import { truncateTonAddress } from "@/lib/ton/address";
 import { getTonNetwork } from "@/lib/ton/network";
 
 export function useWalletAccess() {
   const wallet = useTonWallet();
   const { isTelegram } = useTelegram();
+  const { t } = useLanguage();
   const walletAddress = wallet?.account.address ?? null;
   const network = getTonNetwork();
 
@@ -20,15 +22,15 @@ export function useWalletAccess() {
     network,
     isConnected: Boolean(walletAddress),
     compactAddress: walletAddress ? truncateTonAddress(walletAddress) : null,
-    statusLabel: walletAddress ? `${network} wallet connected` : "Connect TON wallet to continue.",
-    telegramLabel: isTelegram ? "Inside Telegram" : "Outside Telegram"
+    statusLabel: walletAddress ? `${network} ${t.walletGate.connectedSuffix}` : t.walletGate.connectToContinue,
+    telegramLabel: isTelegram ? t.walletGate.insideTelegram : t.walletGate.outsideTelegram
   };
 }
 
 export function WalletGateLink({
   href,
   className,
-  blockedLabel = "Connect TON wallet to continue.",
+  blockedLabel,
   children
 }: {
   href: Route;
@@ -37,6 +39,7 @@ export function WalletGateLink({
   children: ReactNode;
 }) {
   const { isConnected } = useWalletAccess();
+  const { t } = useLanguage();
 
   if (isConnected) {
     return (
@@ -48,15 +51,15 @@ export function WalletGateLink({
 
   return (
     <button className={className} disabled type="button">
-      {blockedLabel}
+      {blockedLabel ?? t.walletGate.connectToContinue}
     </button>
   );
 }
 
 export function WalletGateButton({
   className,
-  blockedLabel = "Connect TON wallet to continue.",
-  connectedLabel = "Continue",
+  blockedLabel,
+  connectedLabel,
   onClick
 }: {
   className: string;
@@ -65,20 +68,22 @@ export function WalletGateButton({
   onClick?: () => void | Promise<void>;
 }) {
   const { isConnected } = useWalletAccess();
+  const { t } = useLanguage();
 
   return (
     <button className={className} disabled={!isConnected} onClick={onClick} type="button">
-      {isConnected ? connectedLabel : blockedLabel}
+      {isConnected ? connectedLabel ?? t.walletGate.continue : blockedLabel ?? t.walletGate.connectToContinue}
     </button>
   );
 }
 
 export function WalletGateNotice() {
   const { statusLabel, telegramLabel, isTelegram } = useWalletAccess();
+  const { t } = useLanguage();
 
   return (
     <div className="rounded-[20px] bg-white p-3 text-xs font-semibold leading-5 text-[#64748b]">
-      <p className="font-black text-[#171c20]">Wallet gate</p>
+      <p className="font-black text-[#171c20]">{t.walletGate.gate}</p>
       <p>{statusLabel}</p>
       {!isTelegram ? <p className="mt-1 font-black">{telegramLabel}</p> : null}
     </div>

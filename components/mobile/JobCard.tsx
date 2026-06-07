@@ -1,10 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import type { Route } from "next";
 import { CalendarDays, Zap } from "lucide-react";
 import type { MarketplaceJob } from "@/lib/domain/types";
 import { AiRiskBadge } from "@/components/mobile/AiRiskBadge";
+import { useLanguage } from "@/components/language-provider";
 
 export function JobCard({ job }: { job: MarketplaceJob }) {
+  const { t } = useLanguage();
   const href = `/jobs/${job.id}` as Route;
   return (
     <Link className="block rounded-[28px] border border-[#dfe3e8] bg-white p-4 shadow-[0_14px_34px_rgba(0,101,142,0.08)]" href={href}>
@@ -22,11 +26,11 @@ export function JobCard({ job }: { job: MarketplaceJob }) {
         </span>
         <span className="flex items-center gap-1 font-bold text-[#64748b]">
           <CalendarDays className="h-4 w-4" />
-          {job.deadline ?? "Flexible"}
+          {job.deadline ?? t.jobCard.flexible}
         </span>
       </div>
       <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-[#e6f7ff] px-3 py-1 text-xs font-black text-[#00658e]">
-        <Zap className="h-3.5 w-3.5" /> Apply: 1 Energy
+        <Zap className="h-3.5 w-3.5" /> {t.jobCard.applyEnergy}
       </div>
     </Link>
   );

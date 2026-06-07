@@ -82,13 +82,13 @@ export function TelegramProfilePanel() {
         </div>
 
         <div className="mt-5 grid grid-cols-3 gap-2">
-          <Stat label="Deals" value="0" />
-          <Stat label="Rating" value="New" />
-          <Stat label="Paid" value="$0" />
+          <Stat label={t.profileExtra.statDeals} value="0" />
+          <Stat label={t.profileExtra.statRating} value={t.profileExtra.ratingNew} />
+          <Stat label={t.profileExtra.statPaid} value={t.profileExtra.paidZero} />
         </div>
 
         <div className="mt-4 rounded-2xl bg-[#f6faff] p-3">
-          <p className="text-xs font-black text-[#64748b]">Auth status</p>
+          <p className="text-xs font-black text-[#64748b]">{t.profileExtra.authStatus}</p>
           <p className="mt-1 text-sm font-black text-[#171c20]">
             {authStatus === "verified" ? t.profile.authVerified : authStatus === "verifying" ? t.profile.authVerifying : t.profile.authUnavailable}
           </p>
@@ -121,18 +121,18 @@ export function TelegramProfilePanel() {
       <section className="rounded-3xl bg-[#00658e] p-5 text-white shadow-[0_18px_38px_rgba(0,101,142,0.20)]">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-black text-[#acedff]">Reputation layer</p>
-            <h2 className="mt-1 text-2xl font-black">On-chain trust</h2>
+            <p className="text-sm font-black text-[#acedff]">{t.profileExtra.reputationLayer}</p>
+            <h2 className="mt-1 text-2xl font-black">{t.profileExtra.onChainTrust}</h2>
           </div>
           <Trophy className="h-7 w-7 text-[#acedff]" />
         </div>
-        <p className="mt-3 text-sm font-medium leading-6 text-white/70">Completed TON deals will become verifiable WorkPay reputation.</p>
+        <p className="mt-3 text-sm font-medium leading-6 text-white/70">{t.profileExtra.reputationBody}</p>
       </section>
 
       <div className="grid gap-3">
         <ProfileRow icon={<BadgeCheck className="h-5 w-5" />} title={t.profile.identity} value={authStatus === "verified" ? t.onboarding.verified : t.onboarding.openInTelegram} />
-        <ProfileRow icon={<Star className="h-5 w-5" />} title="Client score" value="No completed deals yet" />
-        <ProfileRow icon={<LinkIcon className="h-5 w-5" />} title="Portfolio" value="Add links in your profile details" />
+        <ProfileRow icon={<Star className="h-5 w-5" />} title={t.profileExtra.clientScore} value={t.profileExtra.noCompletedDeals} />
+        <ProfileRow icon={<LinkIcon className="h-5 w-5" />} title={t.profileExtra.portfolio} value={t.profileExtra.portfolioHint} />
       </div>
     </div>
   );

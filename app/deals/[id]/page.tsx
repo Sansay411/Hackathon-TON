@@ -1,9 +1,13 @@
+"use client";
+
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { Bot, ReceiptText, ShieldCheck } from "lucide-react";
 import { AiRiskBadge } from "@/components/mobile/AiRiskBadge";
 import { DealTimeline } from "@/components/mobile/DealTimeline";
 import { MobileShell } from "@/components/mobile/MobileShell";
 import { PaymentStatusCard } from "@/components/mobile/PaymentStatusCard";
+import { useLanguage } from "@/components/language-provider";
 import type { AiReview } from "@/lib/domain/types";
 
 const review: AiReview = {
@@ -18,8 +22,10 @@ const review: AiReview = {
   ]
 };
 
-export default async function DealDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default function DealDetailPage() {
+  const params = useParams<{ id: string }>();
+  const id = params.id;
+  const { t } = useLanguage();
 
   return (
     <MobileShell>
@@ -28,9 +34,9 @@ export default async function DealDetailPage({ params }: { params: Promise<{ id:
           <div className="absolute -right-8 -top-10 h-32 w-32 rounded-full bg-[#85cfff]/25" />
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-sm font-black text-[#acedff]">Deal summary</p>
-              <h1 className="mt-2 text-[28px] font-black leading-tight tracking-normal">Landing Page Design</h1>
-              <p className="mt-2 text-sm font-medium leading-6 text-white/70">Deal {id} is prepared for TON-native escrow verification.</p>
+              <p className="text-sm font-black text-[#acedff]">{t.dealDetail.eyebrow}</p>
+              <h1 className="mt-2 text-[28px] font-black leading-tight tracking-normal">{t.dealDetail.dealName}</h1>
+              <p className="mt-2 text-sm font-medium leading-6 text-white/70">{t.dealDetail.dealWord} {id} {t.dealDetail.summaryNote}</p>
             </div>
             <div className="rounded-2xl bg-white/10 p-3 text-[#acedff]">
               <ShieldCheck className="h-6 w-6" />
@@ -38,12 +44,12 @@ export default async function DealDetailPage({ params }: { params: Promise<{ id:
           </div>
           <div className="mt-5 grid grid-cols-2 gap-3">
             <div className="rounded-[22px] bg-white/10 p-3">
-              <p className="text-xs text-white/60">Amount</p>
-              <p className="mt-1 text-xl font-black">20 USDT</p>
+              <p className="text-xs text-white/60">{t.dealDetail.amount}</p>
+              <p className="mt-1 text-xl font-black">20 TON</p>
             </div>
             <div className="rounded-[22px] bg-white/10 p-3">
-              <p className="text-xs text-white/60">Status</p>
-              <p className="mt-1 text-xl font-black">Waiting</p>
+              <p className="text-xs text-white/60">{t.dealDetail.status}</p>
+              <p className="mt-1 text-xl font-black">{t.deals.statuses.waiting}</p>
             </div>
           </div>
         </header>
@@ -51,8 +57,8 @@ export default async function DealDetailPage({ params }: { params: Promise<{ id:
         <section className="rounded-[30px] border border-[#dfe3e8] bg-white p-5 shadow-[0_14px_34px_rgba(0,101,142,0.08)]">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-black text-[#229ED9]">Mira AI review</p>
-              <h2 className="mt-1 text-2xl font-black">{review.clarityScore}/100 clarity</h2>
+              <p className="text-sm font-black text-[#229ED9]">{t.dealDetail.miraReview}</p>
+              <h2 className="mt-1 text-2xl font-black">{review.clarityScore}/100 {t.dealDetail.clarity}</h2>
             </div>
             <div className="rounded-2xl bg-[#00658e] p-3 text-white">
               <Bot className="h-6 w-6" />
@@ -72,7 +78,7 @@ export default async function DealDetailPage({ params }: { params: Promise<{ id:
         <DealTimeline />
         <Link className="flex items-center justify-center gap-2 rounded-[22px] bg-[#229ED9] px-4 py-3 font-black text-white" href={`/deals/${id}/receipt`}>
           <ReceiptText className="h-4 w-4" />
-          Open receipt
+          {t.dealDetail.openReceipt}
         </Link>
       </div>
     </MobileShell>

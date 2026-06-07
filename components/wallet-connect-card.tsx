@@ -37,14 +37,14 @@ export function WalletConnectCard() {
     const payload = (await response.json()) as { ok?: boolean; data?: { profile?: { walletAddress?: string | null } }; error?: { message?: string } };
     if (!response.ok || !payload.ok || !payload.data?.profile?.walletAddress) {
       setStatus("error");
-      setMessage(payload.error?.message ?? "Wallet save failed");
+      setMessage(payload.error?.message ?? t.walletExtra.saveFailed);
       return;
     }
 
     setStatus("saved");
-    setMessage(`Saved ${truncateTonAddress(payload.data.profile.walletAddress)}`);
+    setMessage(`${t.walletExtra.savedPrefix} ${truncateTonAddress(payload.data.profile.walletAddress)}`);
     lastSavedWallet.current = walletAddress;
-  }, [initData, network, walletAddress]);
+  }, [initData, network, walletAddress, t.walletExtra.saveFailed, t.walletExtra.savedPrefix]);
 
   useEffect(() => {
     if (!walletAddress || walletAddress === lastSavedWallet.current) {
@@ -85,7 +85,7 @@ export function WalletConnectCard() {
           onClick={saveWalletAddress}
           type="button"
         >
-          {status === "saving" ? "Saving..." : status === "saved" ? t.common.saved : t.wallet.saveWallet}
+          {status === "saving" ? t.common.saving : status === "saved" ? t.common.saved : t.wallet.saveWallet}
         </button>
         <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-black ${walletAddress ? "bg-[#e6f7ff] text-[#00658e]" : "bg-[#f0f4f9] text-[#64748b]"}`}>
           {status === "saved" ? <CheckCircle2 className="h-3.5 w-3.5" /> : null}

@@ -18,16 +18,32 @@ const LanguageContext = createContext<LanguageContextValue>({
 
 const storageKey = "workpay:language";
 
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<WorkPayLanguage>("en");
+function persistLanguage(language: WorkPayLanguage) {
+  window.localStorage.setItem(storageKey, language);
+  document.cookie = `${storageKey}=${language}; path=/; max-age=31536000; samesite=lax`;
+}
+
+export function LanguageProvider({
+  children,
+  initialLanguage = "en"
+}: {
+  children: React.ReactNode;
+  initialLanguage?: WorkPayLanguage;
+}) {
+  const [language, setLanguageState] = useState<WorkPayLanguage>(initialLanguage);
 
   useEffect(() => {
     const saved = window.localStorage.getItem(storageKey);
-    setLanguageState(normalizeLanguage(saved ?? navigator.language));
+    const resolved = normalizeLanguage(saved ?? navigator.language);
+    if (resolved !== language) {
+      setLanguageState(resolved);
+    }
+    persistLanguage(resolved);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const setLanguage = useCallback((nextLanguage: WorkPayLanguage) => {
-    window.localStorage.setItem(storageKey, nextLanguage);
+    persistLanguage(nextLanguage);
     setLanguageState(nextLanguage);
   }, []);
 

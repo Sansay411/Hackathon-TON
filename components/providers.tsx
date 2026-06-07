@@ -7,8 +7,9 @@ import { useState } from "react";
 import { TelegramProvider } from "@/components/telegram-provider";
 import { LanguageProvider } from "@/components/language-provider";
 import { getTonConnectManifestUrl } from "@/lib/ton/network";
+import type { WorkPayLanguage } from "@/lib/domain/types";
 
-export function Providers({ children }: { children: React.ReactNode }) {
+export function Providers({ children, initialLanguage }: { children: React.ReactNode; initialLanguage?: WorkPayLanguage }) {
   const [queryClient] = useState(() => new QueryClient());
 
   return (
@@ -16,7 +17,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <TonConnectUIProvider manifestUrl={getTonConnectManifestUrl()}>
           <TelegramProvider>
-            <LanguageProvider>{children}</LanguageProvider>
+            <LanguageProvider initialLanguage={initialLanguage}>{children}</LanguageProvider>
           </TelegramProvider>
         </TonConnectUIProvider>
       </QueryClientProvider>
