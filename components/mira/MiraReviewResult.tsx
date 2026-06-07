@@ -26,7 +26,7 @@ export function MiraReviewResult({ parsed }: { parsed: ParsedMiraReview }) {
         <div>
           <p className="text-xs font-black uppercase tracking-[0.5px] text-[#64748b]">{t.mira.clarityScore}</p>
           <p className="mt-1 text-2xl font-black text-[#171c20]">
-            {review.clarityScore !== null ? `${review.clarityScore}/100` : t.mira.none}
+            {review.clarityScore !== null ? `${review.clarityScore}/10` : t.mira.none}
           </p>
         </div>
         {review.riskLevel ? <AiRiskBadge risk={review.riskLevel} /> : null}

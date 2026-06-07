@@ -160,7 +160,7 @@ function ActiveDeal() {
   return (
     <section className="space-y-2">
       <h2 className="px-1 text-xl font-black text-[#171c20]">{t.home.activeDealsTitle}</h2>
-      <Link className="block rounded-2xl border border-[#dfe3e8] bg-white p-5 shadow-[0_8px_24px_rgba(0,101,142,0.06)]" href="/deals/foundation-preview">
+      <Link className="block rounded-2xl border border-[#dfe3e8] bg-white p-5 shadow-[0_8px_24px_rgba(0,101,142,0.06)]" href="/deals/WP-1024">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1 overflow-hidden pr-2">
             <div className="flex items-center gap-2">

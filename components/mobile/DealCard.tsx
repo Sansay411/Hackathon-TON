@@ -3,7 +3,7 @@ import { ShieldCheck } from "lucide-react";
 
 export function DealCard() {
   return (
-    <Link className="block rounded-[30px] bg-[#00658e] p-5 text-white shadow-[0_22px_44px_rgba(0,101,142,0.22)]" href="/deals/foundation-preview">
+    <Link className="block rounded-[30px] bg-[#00658e] p-5 text-white shadow-[0_22px_44px_rgba(0,101,142,0.22)]" href="/deals/WP-1024">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-black text-[#acedff]">Active deal</p>

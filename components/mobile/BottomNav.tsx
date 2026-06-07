@@ -39,7 +39,6 @@ export function BottomNav() {
             return (
               <Link key={item.labelKey} className="flex flex-col items-center gap-1 pt-8 text-[11px] font-black text-[#00658e]" href={item.href}>
                 <span className="sr-only">{label}</span>
-                {label}
               </Link>
             );
           }

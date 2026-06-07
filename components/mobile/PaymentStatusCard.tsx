@@ -63,7 +63,7 @@ export function PaymentStatusCard({ dealId, amount, asset }: PaymentStatusCardPr
   const { initData } = useTelegram();
   const { isConnected } = useWalletAccess();
   const [tab, setTab] = useState<"direct" | "stonfi">("direct");
-  const [status, setStatus] = useState<string>("Wallet required");
+  const [status, setStatus] = useState<string>(isConnected ? "Waiting for TON payment" : "Wallet required");
   const [txHash, setTxHash] = useState("");
   const [busy, setBusy] = useState(false);
   const [stonfiState, setStonfiState] = useState<StonfiQuoteState>("idle");
@@ -163,7 +163,7 @@ export function PaymentStatusCard({ dealId, amount, asset }: PaymentStatusCardPr
     <section className="rounded-[30px] border border-[#dfe3e8] bg-white p-5 shadow-[0_14px_34px_rgba(0,101,142,0.08)]">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-black text-[#229ED9]">Payment demo</p>
+          <p className="text-sm font-black text-[#229ED9]">TON Payment Proof</p>
           <h2 className="mt-1 text-2xl font-black">TON escrow proof</h2>
         </div>
         <div className="rounded-2xl bg-[#00658e] p-3 text-white">
@@ -197,7 +197,7 @@ export function PaymentStatusCard({ dealId, amount, asset }: PaymentStatusCardPr
           ) : null}
           <WalletGateButton
             className="mt-3 w-full rounded-2xl bg-[#229ED9] px-4 py-3 text-sm font-black text-white disabled:cursor-not-allowed disabled:opacity-60"
-            connectedLabel={busy ? "Opening wallet..." : `Create TON transfer (${amount} ${asset})`}
+            connectedLabel={busy ? "Opening wallet..." : "Create small TON transfer"}
             onClick={async () => {
               setBusy(true);
               setStatus("Preparing transaction");
@@ -222,53 +222,56 @@ export function PaymentStatusCard({ dealId, amount, asset }: PaymentStatusCardPr
             }}
           />
 
-          <div className="mt-3 grid gap-2">
-            <input
-              className="h-11 rounded-2xl border border-[#dfe3e8] bg-white px-3 text-sm font-semibold text-[#171c20] outline-none"
-              onChange={(event) => setTxHash(event.target.value)}
-              placeholder="Paste transaction hash"
-              value={txHash}
-            />
-            {!readiness?.tonCenterConfigured ? (
-              <p className="rounded-2xl bg-[#fff4f4] px-3 py-2 text-xs font-black text-[#c0392b]">TONCENTER_API_KEY is not configured. Verification is unavailable.</p>
-            ) : null}
-            <button
-              className="rounded-2xl border border-[#229ED9] bg-white px-4 py-3 text-sm font-black text-[#00658e] disabled:cursor-not-allowed disabled:opacity-50"
-              disabled={busy || !readiness?.tonCenterConfigured || txHash.trim().length < 40}
-              onClick={async () => {
-                setBusy(true);
-                setStatus("Verifying with TONCenter");
-                try {
-                  const response = await fetch("/api/payments/verify", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ initData, dealId, txHash, walletAddress: undefined, network: "testnet" })
-                  });
-                  const payload = (await response.json()) as PaymentVerifyResponse;
-                  const verification = payload.data?.verification;
-                  const balanceUpdate = payload.data?.balanceUpdate;
-                  if (!response.ok || !payload.ok) {
-                    setStatus(payload.error?.message ?? "Verification unavailable");
-                    return;
+          <details className="mt-3">
+            <summary className="cursor-pointer rounded-2xl bg-[#edf2f7] px-3 py-2 text-xs font-black text-[#64748b]">Advanced verification</summary>
+            <div className="mt-2 grid gap-2 pl-2">
+              <input
+                className="h-11 rounded-2xl border border-[#dfe3e8] bg-white px-3 text-sm font-semibold text-[#171c20] outline-none"
+                onChange={(event) => setTxHash(event.target.value)}
+                placeholder="Paste transaction hash"
+                value={txHash}
+              />
+              {!readiness?.tonCenterConfigured ? (
+                <p className="rounded-2xl bg-[#fff4f4] px-3 py-2 text-xs font-black text-[#c0392b]">TONCENTER_API_KEY is not configured. Verification is unavailable.</p>
+              ) : null}
+              <button
+                className="rounded-2xl border border-[#229ED9] bg-white px-4 py-3 text-sm font-black text-[#00658e] disabled:cursor-not-allowed disabled:opacity-50"
+                disabled={busy || !readiness?.tonCenterConfigured || txHash.trim().length < 40}
+                onClick={async () => {
+                  setBusy(true);
+                  setStatus("Verifying with TONCenter");
+                  try {
+                    const response = await fetch("/api/payments/verify", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ initData, dealId, txHash, walletAddress: undefined, network: "testnet" })
+                    });
+                    const payload = (await response.json()) as PaymentVerifyResponse;
+                    const verification = payload.data?.verification;
+                    const balanceUpdate = payload.data?.balanceUpdate;
+                    if (!response.ok || !payload.ok) {
+                      setStatus(payload.error?.message ?? "Verification unavailable");
+                      return;
+                    }
+                    setStatus(
+                      verification?.status === "confirmed"
+                        ? balanceUpdate?.balanceTon != null
+                          ? `TONCenter confirmed. Balance: ${balanceUpdate.balanceTon} TON`
+                          : "TONCenter confirmed payment"
+                        : verification?.reason ?? verification?.status ?? "Not confirmed"
+                    );
+                  } catch (error) {
+                    setStatus(error instanceof Error ? error.message : "TONCenter request failed");
+                  } finally {
+                    setBusy(false);
                   }
-                  setStatus(
-                    verification?.status === "confirmed"
-                      ? balanceUpdate?.balanceTon != null
-                        ? `TONCenter confirmed. Balance: ${balanceUpdate.balanceTon} TON`
-                        : "TONCenter confirmed payment"
-                      : verification?.reason ?? verification?.status ?? "Not confirmed"
-                  );
-                } catch (error) {
-                  setStatus(error instanceof Error ? error.message : "TONCenter request failed");
-                } finally {
-                  setBusy(false);
-                }
-              }}
-              type="button"
-            >
-              Verify with TONCenter
-            </button>
-          </div>
+                }}
+                type="button"
+              >
+                Verify with TONCenter
+              </button>
+            </div>
+          </details>
         </div>
       ) : (
         <div className="mt-4 rounded-[20px] bg-[#f6faff] p-3">
@@ -299,7 +302,7 @@ export function PaymentStatusCard({ dealId, amount, asset }: PaymentStatusCardPr
               />
             ) : null}
             {stonfiMessage ? <p className="rounded-2xl bg-[#fff4f4] px-3 py-2 text-xs font-black text-[#c0392b]">{stonfiMessage}</p> : null}
-            <p className="text-xs font-semibold leading-5 text-[#94a3b8]">Quote only. WorkPay never marks a swap completed or a deal funded from STON.fi UI status.</p>
+            <p className="text-xs font-semibold leading-5 text-[#94a3b8]">Quote only. WorkPay does not mark the deal funded until payment is verified.</p>
           </div>
         </div>
       )}

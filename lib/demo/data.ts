@@ -1,8 +1,8 @@
 import type { EnergyTransaction, JobApplication, MarketplaceJob, Profile } from "@/lib/domain/types";
 
 export const demoDealScenario = {
-  id: "foundation-preview",
-  title: "WorkPay receipt and escrow proof implementation",
+  id: "WP-1024",
+  title: "WorkPay Demo Deal",
   description:
     "Freelancer will implement the completed deal receipt flow for WorkPay, including TON funding proof, release proof, setup-required states, and Telegram share text.",
   amount: "20",
