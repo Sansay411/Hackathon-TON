@@ -45,3 +45,12 @@ export const paymentCreateSchema = z.object({
   amount: z.string().regex(/^\d+(\.\d{1,9})?$/),
   paymentMode: z.enum(["direct_ton", "stonfi_swap"]).default("direct_ton")
 });
+
+export const paymentVerifySchema = z.object({
+  initData: z.string().optional(),
+  dealId: z.string().min(1),
+  txHash: z.string().min(40).max(200),
+  expectedAmount: z.string().regex(/^\d+(\.\d{1,9})?$/),
+  expectedAsset: z.string().min(2).max(20).default("TON"),
+  network: z.enum(["testnet", "mainnet"]).default("testnet")
+});
