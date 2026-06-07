@@ -40,6 +40,10 @@ export function buildMiniAppUrl(path = "/", startParam?: string, baseUrl = proce
   }
 
   const url = new URL(path, `${normalizeAppUrl(baseUrl)}/`);
+  const launchVersion = process.env.NEXT_PUBLIC_APP_VERSION;
+  if (launchVersion) {
+    url.searchParams.set("v", launchVersion);
+  }
   if (startParam) {
     url.searchParams.set("startapp", startParam);
   }
