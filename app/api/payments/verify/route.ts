@@ -1,4 +1,5 @@
 import { apiError, apiOk } from "@/lib/api/errors";
+import { getVerifiedProfile, walletRequiredError } from "@/lib/api/profile";
 import { paymentVerifySchema } from "@/lib/api/validation";
 import { ProviderBackedTonPaymentVerifier } from "@/lib/ton/paymentVerifier";
 
@@ -10,8 +11,22 @@ export async function POST(request: Request) {
     return apiError("bad_request", "Invalid payment verify payload.", 400);
   }
 
-  if (process.env.NEXT_PUBLIC_TON_NETWORK === "mainnet" && process.env.NEXT_PUBLIC_ENABLE_MAINNET !== "true") {
+  if (parsed.data.network === "mainnet" && process.env.NEXT_PUBLIC_ENABLE_MAINNET !== "true") {
     return apiError("bad_request", "Mainnet payment verification is disabled.", 400);
+  }
+
+  const profileResult = await getVerifiedProfile(parsed.data.initData);
+  if (profileResult.status === "telegram_required") {
+    return apiError("telegram_required", profileResult.message, 400);
+  }
+  if (profileResult.status === "setup_required") {
+    return apiError("setup_required", profileResult.message, 503);
+  }
+  if (profileResult.status === "unauthorized") {
+    return apiError("unauthorized", profileResult.message, 401);
+  }
+  if (!profileResult.profile.walletAddress) {
+    return apiError(walletRequiredError().error, walletRequiredError().message, 403);
   }
 
   const escrowWallet = process.env.ESCROW_WALLET_ADDRESS;
@@ -23,8 +38,10 @@ export async function POST(request: Request) {
   const result = await verifier.verify({
     txHash: parsed.data.txHash,
     expectedEscrowWallet: escrowWallet,
+    expectedSenderWallet: profileResult.profile.walletAddress,
     expectedAmount: parsed.data.expectedAmount,
     expectedAsset: parsed.data.expectedAsset,
+    expectedComment: `workpay:${parsed.data.dealId}`,
     network: parsed.data.network
   });
 

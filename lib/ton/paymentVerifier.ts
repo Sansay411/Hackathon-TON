@@ -4,8 +4,10 @@ import { userFriendlyToRawAddress } from "@/lib/ton/address";
 export type TonPaymentVerificationInput = {
   txHash: string;
   expectedEscrowWallet: string;
+  expectedSenderWallet: string;
   expectedAmount: string;
   expectedAsset: string;
+  expectedComment: string;
   network: "testnet" | "mainnet";
 };
 
@@ -79,6 +81,13 @@ function compareDestination(value: string, expectedRaw: string): boolean {
   return fromValue !== null && fromValue === expectedRaw;
 }
 
+function compareAddress(value: string | undefined, expectedRaw: string): boolean {
+  if (!value) return false;
+  if (value.toUpperCase() === expectedRaw.toUpperCase()) return true;
+  const fromValue = userFriendlyToRawAddress(value);
+  return fromValue !== null && fromValue.toUpperCase() === expectedRaw.toUpperCase();
+}
+
 function getBaseUrl(network: "testnet" | "mainnet"): string {
   return network === "mainnet"
     ? "https://toncenter.com/api/v3"
@@ -126,6 +135,13 @@ export class ProviderBackedTonPaymentVerifier implements TonPaymentVerifier {
         reason: "Escrow wallet address is not a valid TON address."
       };
     }
+    const expectedSenderRaw = userFriendlyToRawAddress(input.expectedSenderWallet);
+    if (!expectedSenderRaw) {
+      return {
+        status: "mismatch",
+        reason: "Connected wallet address is not a valid TON address."
+      };
+    }
 
     const txHash = normalizeTxHash(input.txHash);
     if (!txHash) {
@@ -164,7 +180,7 @@ export class ProviderBackedTonPaymentVerifier implements TonPaymentVerifier {
       const tx = txList[0];
 
       if (tx.in_msg) {
-        const result = matchInbound(tx.in_msg, expectedRaw, expectedNano(input.expectedAmount));
+        const result = matchInbound(tx.in_msg, expectedRaw, expectedSenderRaw, expectedNano(input.expectedAmount), input.expectedComment);
         if (result) {
           return finalize(input.txHash, tx.in_msg, result);
         }
@@ -185,7 +201,12 @@ export class ProviderBackedTonPaymentVerifier implements TonPaymentVerifier {
         if (!landedAmount) continue;
         if (compareDestination(landedTx.in_msg.destination ?? "", expectedRaw)) {
           try {
-            if (BigInt(landedAmount) >= expectedNano(input.expectedAmount)) {
+            const comment = extractComment(landedTx.in_msg);
+            if (
+              BigInt(landedAmount) >= expectedNano(input.expectedAmount) &&
+              compareAddress(landedTx.in_msg.source, expectedSenderRaw) &&
+              comment === input.expectedComment
+            ) {
               return finalize(input.txHash, landedTx.in_msg, { amount: landedAmount, destinationMatch: true });
             }
           } catch {
@@ -196,7 +217,7 @@ export class ProviderBackedTonPaymentVerifier implements TonPaymentVerifier {
 
       return {
         status: "mismatch",
-        reason: "No inbound message to the escrow wallet with the expected amount was found in this transaction."
+        reason: "No inbound message matched escrow wallet, connected sender wallet, expected amount, and WorkPay reference."
       };
     } catch (err) {
       const message = err instanceof Error ? err.message : "unknown error";
@@ -213,10 +234,14 @@ export class ProviderBackedTonPaymentVerifier implements TonPaymentVerifier {
 function matchInbound(
   msg: TonCenterV3Message,
   expectedRaw: string,
-  expectedNanoBig: bigint
+  expectedSenderRaw: string,
+  expectedNanoBig: bigint,
+  expectedComment: string
 ): { amount: string; destinationMatch: boolean } | null {
   const destination = msg.destination ?? "";
   if (!compareDestination(destination, expectedRaw)) return null;
+  if (!compareAddress(msg.source, expectedSenderRaw)) return null;
+  if (extractComment(msg) !== expectedComment) return null;
   const value = msg.value;
   if (!value) return null;
   try {

@@ -16,7 +16,14 @@ type PaymentCreateResponse = {
   ok?: boolean;
   data?: {
     transaction?: Parameters<ReturnType<typeof useTonConnectUI>[0]["sendTransaction"]>[0];
-    payment?: { reference?: string };
+  };
+  error?: { code?: string; message?: string };
+};
+
+type PaymentVerifyResponse = {
+  ok?: boolean;
+  data?: {
+    verification?: { status?: string; reason?: string };
   };
   error?: { code?: string; message?: string };
 };
@@ -26,6 +33,7 @@ export function PaymentStatusCard({ dealId, amount, asset }: PaymentStatusCardPr
   const { initData } = useTelegram();
   const [tab, setTab] = useState<"direct" | "stonfi">("direct");
   const [status, setStatus] = useState("Awaiting verified TON tx");
+  const [txHash, setTxHash] = useState("");
   const [busy, setBusy] = useState(false);
 
   return (
@@ -33,12 +41,13 @@ export function PaymentStatusCard({ dealId, amount, asset }: PaymentStatusCardPr
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-black text-[#229ED9]">Payment status</p>
-          <h2 className="mt-1 text-2xl font-black">Escrow prepared</h2>
+          <h2 className="mt-1 text-2xl font-black">Escrow proof</h2>
         </div>
         <div className="rounded-2xl bg-[#00658e] p-3 text-white">
           <LockKeyhole className="h-6 w-6" />
         </div>
       </div>
+
       <div className="mt-4 grid grid-cols-2 gap-2 rounded-[18px] bg-[#f6faff] p-1">
         <button className={`rounded-2xl px-3 py-2 text-sm font-black ${tab === "direct" ? "bg-white text-[#171c20] shadow-sm" : "text-[#64748b]"}`} onClick={() => setTab("direct")} type="button">
           Direct TON
@@ -47,15 +56,20 @@ export function PaymentStatusCard({ dealId, amount, asset }: PaymentStatusCardPr
           STON.fi Swap
         </button>
       </div>
+
       <div className="mt-5 grid gap-3">
-        <StatusRow icon={<WalletCards className="h-4 w-4" />} label="Direct TON payment" value="Ожидает настройки escrow" />
-        <StatusRow icon={<ArrowLeftRight className="h-4 w-4" />} label="STON.fi swap payment" value="Требуется настройка STON.fi" />
+        <StatusRow icon={<WalletCards className="h-4 w-4" />} label="Direct TON payment" value="TONCenter verify" />
+        <StatusRow icon={<ArrowLeftRight className="h-4 w-4" />} label="STON.fi swap payment" value="Omniston setup required" />
         <StatusRow icon={<LockKeyhole className="h-4 w-4" />} label="Escrow status" value={status} />
       </div>
+
       {tab === "direct" ? (
         <div className="mt-4 rounded-[20px] bg-[#f6faff] p-3 text-xs font-semibold leading-5 text-[#64748b]">
           <p className="font-black text-[#171c20]">Direct TON</p>
-          <p>Оплата через TON будет доступна после подключения тестового escrow-кошелька. После подписи в кошельке WorkPay отдельно проверит транзакцию в сети.</p>
+          <p>
+            WorkPay prepares a real TonConnect transfer only when ESCROW_WALLET_ADDRESS is configured. Wallet approval is not funding confirmation; TONCenter verification must match escrow,
+            sender wallet, amount, and WorkPay reference.
+          </p>
           <WalletGateButton
             className="mt-3 w-full rounded-2xl bg-[#229ED9] px-4 py-3 text-sm font-black text-white disabled:cursor-not-allowed disabled:opacity-60"
             connectedLabel={busy ? "Opening wallet..." : `Prepare ${amount} ${asset}`}
@@ -70,18 +84,56 @@ export function PaymentStatusCard({ dealId, amount, asset }: PaymentStatusCardPr
                 });
                 const payload = (await response.json()) as PaymentCreateResponse;
                 if (!response.ok || !payload.ok || !payload.data?.transaction) {
-                  setStatus(payload.error?.message ?? "Требуется настройка оплаты");
+                  setStatus(payload.error?.message ?? "Payment setup required");
                   return;
                 }
                 await tonConnectUI.sendTransaction(payload.data.transaction);
-                setStatus("Кошелек принял транзакцию. WorkPay проверяет оплату отдельно.");
+                setStatus("Wallet accepted the transaction. Paste the testnet tx hash below so TONCenter can verify it.");
               } catch (error) {
-                setStatus(error instanceof Error ? error.message : "Кошелек отклонил или не отправил транзакцию.");
+                setStatus(error instanceof Error ? error.message : "Wallet rejected or did not send the transaction.");
               } finally {
                 setBusy(false);
               }
             }}
           />
+
+          <div className="mt-3 grid gap-2">
+            <input
+              className="h-11 rounded-2xl border border-[#dfe3e8] bg-white px-3 text-sm font-semibold text-[#171c20] outline-none"
+              onChange={(event) => setTxHash(event.target.value)}
+              placeholder="TON transaction hash"
+              value={txHash}
+            />
+            <button
+              className="rounded-2xl border border-[#229ED9] bg-white px-4 py-3 text-sm font-black text-[#00658e] disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={busy || txHash.trim().length < 40}
+              onClick={async () => {
+                setBusy(true);
+                setStatus("Verifying payment with TONCenter");
+                try {
+                  const response = await fetch("/api/payments/verify", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ initData, dealId, txHash, expectedAmount: amount, expectedAsset: asset, network: "testnet" })
+                  });
+                  const payload = (await response.json()) as PaymentVerifyResponse;
+                  const verification = payload.data?.verification;
+                  if (!response.ok || !payload.ok) {
+                    setStatus(payload.error?.message ?? "TONCenter verification failed");
+                    return;
+                  }
+                  setStatus(verification?.status === "confirmed" ? "TONCenter confirmed escrow funding proof" : verification?.reason ?? verification?.status ?? "Not confirmed");
+                } catch (error) {
+                  setStatus(error instanceof Error ? error.message : "TONCenter verification request failed.");
+                } finally {
+                  setBusy(false);
+                }
+              }}
+              type="button"
+            >
+              Verify with TONCenter
+            </button>
+          </div>
         </div>
       ) : (
         <div className="mt-4 rounded-[20px] bg-[#f6faff] p-3">
@@ -94,10 +146,10 @@ export function PaymentStatusCard({ dealId, amount, asset }: PaymentStatusCardPr
               </select>
             </label>
             <div className="rounded-2xl bg-[#f6faff] p-3 text-xs font-semibold text-[#64748b]">
-              Требуется настройка STON.fi Omniston перед получением реальных котировок.
+              STON.fi Omniston setup is required before requesting real quotes. WorkPay will not show fake route, fake quote, or fake swap success.
             </div>
             <button className="w-full cursor-not-allowed rounded-2xl bg-[#dfe3e8] px-4 py-3 text-sm font-black text-[#64748b]" disabled type="button">
-              Требуется настройка swap
+              Swap setup required
             </button>
           </div>
         </div>
