@@ -18,7 +18,7 @@ export function dealsKeyboard() {
 }
 
 export function walletKeyboard() {
-  return new InlineKeyboard().add(openAppButton("Connect Wallet", "/"));
+  return new InlineKeyboard().add(openAppButton("Connect Wallet", "/wallet"));
 }
 
 export function createJobKeyboard() {
@@ -30,7 +30,7 @@ export function openDealKeyboard(dealId: string) {
 }
 
 export function openProfileKeyboard(profileId: string) {
-  return new InlineKeyboard().add(openAppButton("Open Profile", `/profile/${profileId}`));
+  return new InlineKeyboard().add(openAppButton("Open Profile", profileId ? `/profile/${profileId}` : "/profile"));
 }
 
 function openAppButton(text: string, path: string) {

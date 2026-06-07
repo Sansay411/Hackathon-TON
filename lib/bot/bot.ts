@@ -1,7 +1,7 @@
 import { Bot } from "grammy";
 import { getBotConfig } from "@/lib/bot/config";
-import { helpMessage, unknownMessage, welcomeMessage } from "@/lib/bot/messages";
-import { openWorkPayKeyboard, startKeyboard } from "@/lib/bot/keyboard";
+import { createDealMessage, dealsMessage, helpMessage, unknownMessage, walletMessage, welcomeMessage } from "@/lib/bot/messages";
+import { createDealKeyboard, dealsKeyboard, openWorkPayKeyboard, startKeyboard, walletKeyboard } from "@/lib/bot/keyboard";
 
 export function createWorkPayBot() {
   const bot = new Bot(getBotConfig().token);
@@ -14,9 +14,16 @@ export function createWorkPayBot() {
     await ctx.reply(helpMessage, { reply_markup: openWorkPayKeyboard() });
   });
 
-  bot.callbackQuery("help", async (ctx) => {
-    await ctx.answerCallbackQuery();
-    await ctx.reply(helpMessage, { reply_markup: openWorkPayKeyboard() });
+  bot.command("create", async (ctx) => {
+    await ctx.reply(createDealMessage, { reply_markup: createDealKeyboard() });
+  });
+
+  bot.command("deals", async (ctx) => {
+    await ctx.reply(dealsMessage, { reply_markup: dealsKeyboard() });
+  });
+
+  bot.command("wallet", async (ctx) => {
+    await ctx.reply(walletMessage, { reply_markup: walletKeyboard() });
   });
 
   bot.on("message:text", async (ctx) => {

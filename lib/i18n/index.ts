@@ -1,10 +1,312 @@
-import { en } from "@/lib/i18n/en";
-import { kk } from "@/lib/i18n/kk";
-import { ru } from "@/lib/i18n/ru";
 import type { WorkPayLanguage } from "@/lib/domain/types";
 
-const dictionaries = { en, ru, kk };
+export const supportedLanguages = ["en", "ru"] as const satisfies readonly WorkPayLanguage[];
 
-export function getDictionary(language: WorkPayLanguage = "en") {
+export const dictionaries = {
+  en: {
+    nav: { home: "Home", jobs: "Jobs", create: "Create", deals: "Deals", profile: "Profile" },
+    common: {
+      back: "Back",
+      continue: "Continue",
+      openWorkPay: "Open WorkPay",
+      save: "Save",
+      saved: "Saved",
+      saving: "Saving...",
+      connected: "Connected",
+      linked: "Linked",
+      liveFlow: "Live flow"
+    },
+    onboarding: {
+      setup: "WorkPay setup",
+      telegramFallback: "Telegram user",
+      openInTelegram: "Open in Telegram for verified identity",
+      verified: "Telegram verified",
+      verifying: "Verifying Telegram...",
+      languageStep: "Language",
+      roleStep: "Role",
+      walletStep: "Wallet",
+      profileStep: "Profile",
+      chooseLanguage: "Choose language",
+      languageBody: "This will be used for WorkPay screens and deal guidance.",
+      chooseRole: "Choose your role",
+      roleBody: "WorkPay will tailor jobs, deals, and profile actions around this role.",
+      connectWallet: "Connect TON wallet",
+      walletBody: "Without TON there is no funding, settlement, payment verification, reputation, or active deal.",
+      openWallet: "Open wallet connection",
+      completeProfile: "Complete profile",
+      profileBody: "Telegram provides avatar and name. Add skills, bio, portfolio and rate next.",
+      fillProfile: "Fill profile",
+      languages: { en: "English", ru: "Russian" },
+      roles: { client: "Client", freelancer: "Freelancer", both: "Both" }
+    },
+    home: {
+      subtitle: "TON escrow",
+      title: "Secure freelance work on TON",
+      description: "Secure freelance marketplace inside Telegram, powered by TON.",
+      tonSecured: "TON Secured",
+      aiReviewed: "AI Reviewed",
+      stonfiReady: "STON.fi Ready",
+      energy: "Energy",
+      activeDeals: "Active deals",
+      success: "Success",
+      createDeal: "Create Deal",
+      findWork: "Find Work",
+      deposit: "Deposit",
+      activeDealsTitle: "Active Deals",
+      inProgress: "In progress",
+      dueIn3Days: "Due in 3 days",
+      escrowed: "Escrowed",
+      recommendedJobs: "Recommended Jobs",
+      seeAll: "See All",
+      tonNative: "TON Native"
+    },
+    marketplace: {
+      eyebrow: "Freelance marketplace",
+      title: "Jobs",
+      description: "Find protected freelance work and apply with Energy.",
+      search: "Search jobs",
+      categories: ["All", "Design", "Telegram", "Backend", "TON"],
+      noJobsTitle: "No jobs yet",
+      noJobsBody: "Create the first job to start a protected WorkPay deal.",
+      createJob: "Create job"
+    },
+    deals: {
+      eyebrow: "WorkPay dashboard",
+      title: "My Deals",
+      search: "Search deals",
+      tabs: ["All", "Funded", "Waiting", "Completed", "Disputed"],
+      noDealsTitle: "No deals yet",
+      noDealsBody: "Accept an application or create a job to start a protected WorkPay deal.",
+      createJob: "Create job",
+      recent: "Recent deals",
+      sampleBrand: "Brand identity sprint",
+      sampleBrandBody: "Logo refresh, compact design system, and final export package.",
+      sampleBot: "Telegram bot launch",
+      sampleBotBody: "Mini App bot onboarding, command menu, and launch polish.",
+      statuses: { waiting: "Waiting", completed: "Completed", funded: "Funded" },
+      risks: { low: "Low", medium: "Medium", high: "High" }
+    },
+    wallet: {
+      eyebrow: "TON account",
+      title: "Wallet",
+      description: "Connect wallet, prepare funding, and track escrow readiness.",
+      testnetMode: "Testnet mode",
+      tonReady: "TON ready",
+      escrow: "Escrow",
+      prepared: "Prepared",
+      network: "Network",
+      verifiedOnly: "Verified only",
+      noManualConfirmation: "No manual payment confirmation.",
+      swapPrepared: "Swap route prepared for future funding.",
+      tonWallet: "TON wallet",
+      notConnected: "Not connected",
+      connectedOn: "Connected on",
+      required: "wallet required for deals and payments",
+      telegramSession: "Telegram Mini App session",
+      secureSession: "Secure web session",
+      identity: "WorkPay identity",
+      identityBody: "This wallet is linked to your profile for deal actions, escrow funding and reputation.",
+      saveWallet: "Save wallet",
+      connectWallet: "Connect wallet"
+    },
+    profile: {
+      identity: "Telegram identity",
+      usernameMissing: "Telegram username not set",
+      authVerified: "Verified from Telegram initData",
+      authVerifying: "Verifying Telegram...",
+      authUnavailable: "Telegram verification unavailable",
+      sourceNote: "Avatar, name and username come from Telegram. Extra WorkPay fields are editable below.",
+      complete: "Complete WorkPay profile",
+      freelanceDetails: "Freelance details",
+      bio: "Bio",
+      bioPlaceholder: "What do you build?",
+      skills: "Skills",
+      skillsPlaceholder: "TON, Telegram Mini Apps, React",
+      hourlyRate: "Hourly rate",
+      saveDetails: "Save profile details"
+    },
+    applications: {
+      eyebrow: "Freelancer flow",
+      title: "Applications",
+      description: "Energy spend, AI proposal quality and client decisions are tracked here.",
+      emptyTitle: "No applications yet",
+      emptyBody: "Apply to a marketplace job with Energy to see proposals here.",
+      browseJobs: "Browse jobs"
+    },
+    energyPage: {
+      eyebrow: "Monetization",
+      title: "Energy",
+      description: "Freelancers spend Energy to apply. Purchases require TON or Stars payment setup.",
+      paymentSetupRequired: "Payment setup required",
+      history: "History",
+      emptyTitle: "No Energy history",
+      emptyBody: "Monthly grants, applications and purchases will appear here.",
+      browseJobs: "Browse jobs"
+    },
+    notifications: {
+      eyebrow: "Updates",
+      title: "Notifications",
+      emptyTitle: "No notifications",
+      emptyBody: "Job reviews, applications, deal status changes and payment setup alerts will appear here.",
+      openJobs: "Open jobs"
+    }
+  },
+  ru: {
+    nav: { home: "Главная", jobs: "Работа", create: "Создать", deals: "Сделки", profile: "Профиль" },
+    common: {
+      back: "Назад",
+      continue: "Продолжить",
+      openWorkPay: "Открыть WorkPay",
+      save: "Сохранить",
+      saved: "Сохранено",
+      saving: "Сохранение...",
+      connected: "Подключено",
+      linked: "Привязан",
+      liveFlow: "Живой поток"
+    },
+    onboarding: {
+      setup: "Настройка WorkPay",
+      telegramFallback: "Пользователь Telegram",
+      openInTelegram: "Откройте в Telegram для подтверждения личности",
+      verified: "Telegram подтвержден",
+      verifying: "Проверяем Telegram...",
+      languageStep: "Язык",
+      roleStep: "Роль",
+      walletStep: "Кошелек",
+      profileStep: "Профиль",
+      chooseLanguage: "Выберите язык",
+      languageBody: "Этот язык будет использоваться в интерфейсе WorkPay и подсказках по сделкам.",
+      chooseRole: "Выберите роль",
+      roleBody: "WorkPay настроит работу, сделки и профиль под выбранную роль.",
+      connectWallet: "Подключите TON кошелек",
+      walletBody: "Без TON нет финансирования, расчетов, проверки платежей, репутации и активных сделок.",
+      openWallet: "Открыть подключение кошелька",
+      completeProfile: "Заполните профиль",
+      profileBody: "Telegram передает аватар и имя. Далее добавьте навыки, био, портфолио и ставку.",
+      fillProfile: "Заполнить профиль",
+      languages: { en: "Английский", ru: "Русский" },
+      roles: { client: "Клиент", freelancer: "Фрилансер", both: "Обе роли" }
+    },
+    home: {
+      subtitle: "TON эскроу",
+      title: "Безопасная фриланс-работа на TON",
+      description: "Безопасный фриланс-маркетплейс внутри Telegram на базе TON.",
+      tonSecured: "Защищено TON",
+      aiReviewed: "Проверка AI",
+      stonfiReady: "STON.fi готов",
+      energy: "Energy",
+      activeDeals: "Активные сделки",
+      success: "Успех",
+      createDeal: "Создать сделку",
+      findWork: "Найти работу",
+      deposit: "Пополнить",
+      activeDealsTitle: "Активные сделки",
+      inProgress: "В работе",
+      dueIn3Days: "Срок через 3 дня",
+      escrowed: "В эскроу",
+      recommendedJobs: "Рекомендуемые задачи",
+      seeAll: "Все",
+      tonNative: "TON native"
+    },
+    marketplace: {
+      eyebrow: "Фриланс-маркетплейс",
+      title: "Работа",
+      description: "Находите защищенные задачи и откликайтесь с Energy.",
+      search: "Поиск задач",
+      categories: ["Все", "Дизайн", "Telegram", "Backend", "TON"],
+      noJobsTitle: "Задач пока нет",
+      noJobsBody: "Создайте первую задачу, чтобы запустить защищенную сделку WorkPay.",
+      createJob: "Создать задачу"
+    },
+    deals: {
+      eyebrow: "Панель WorkPay",
+      title: "Мои сделки",
+      search: "Поиск сделок",
+      tabs: ["Все", "Финансированы", "Ожидают", "Завершены", "Споры"],
+      noDealsTitle: "Сделок пока нет",
+      noDealsBody: "Примите отклик или создайте задачу, чтобы начать защищенную сделку WorkPay.",
+      createJob: "Создать задачу",
+      recent: "Последние сделки",
+      sampleBrand: "Спринт по айдентике",
+      sampleBrandBody: "Обновление логотипа, компактная дизайн-система и финальные файлы.",
+      sampleBot: "Запуск Telegram-бота",
+      sampleBotBody: "Онбординг Mini App, меню команд и подготовка к запуску.",
+      statuses: { waiting: "Ожидает", completed: "Завершена", funded: "Финансирована" },
+      risks: { low: "Низкий", medium: "Средний", high: "Высокий" }
+    },
+    wallet: {
+      eyebrow: "TON аккаунт",
+      title: "Кошелек",
+      description: "Подключите кошелек, подготовьте финансирование и отслеживайте готовность эскроу.",
+      testnetMode: "Режим testnet",
+      tonReady: "TON готов",
+      escrow: "Эскроу",
+      prepared: "Подготовлено",
+      network: "Сеть",
+      verifiedOnly: "Только проверенные платежи",
+      noManualConfirmation: "Без ручного подтверждения платежей.",
+      swapPrepared: "Маршрут swap подготовлен для будущего финансирования.",
+      tonWallet: "TON кошелек",
+      notConnected: "Не подключен",
+      connectedOn: "Подключен в сети",
+      required: "кошелек нужен для сделок и платежей",
+      telegramSession: "Сессия Telegram Mini App",
+      secureSession: "Защищенная web-сессия",
+      identity: "Идентичность WorkPay",
+      identityBody: "Этот кошелек привязан к профилю для сделок, эскроу-платежей и репутации.",
+      saveWallet: "Сохранить кошелек",
+      connectWallet: "Подключить кошелек"
+    },
+    profile: {
+      identity: "Telegram профиль",
+      usernameMissing: "Username в Telegram не задан",
+      authVerified: "Подтверждено через Telegram initData",
+      authVerifying: "Проверяем Telegram...",
+      authUnavailable: "Проверка Telegram недоступна",
+      sourceNote: "Аватар, имя и username приходят из Telegram. Дополнительные поля WorkPay заполняются ниже.",
+      complete: "Заполните профиль WorkPay",
+      freelanceDetails: "Данные фрилансера",
+      bio: "О себе",
+      bioPlaceholder: "Что вы создаете?",
+      skills: "Навыки",
+      skillsPlaceholder: "TON, Telegram Mini Apps, React",
+      hourlyRate: "Ставка в час",
+      saveDetails: "Сохранить профиль"
+    },
+    applications: {
+      eyebrow: "Поток фрилансера",
+      title: "Отклики",
+      description: "Здесь отслеживаются траты Energy, качество AI-предложения и решения клиента.",
+      emptyTitle: "Откликов пока нет",
+      emptyBody: "Откликнитесь на задачу в маркетплейсе с Energy, чтобы увидеть предложения здесь.",
+      browseJobs: "Смотреть задачи"
+    },
+    energyPage: {
+      eyebrow: "Монетизация",
+      title: "Energy",
+      description: "Фрилансеры тратят Energy на отклики. Покупки требуют настройки платежей TON или Stars.",
+      paymentSetupRequired: "Требуется настройка платежей",
+      history: "История",
+      emptyTitle: "Истории Energy пока нет",
+      emptyBody: "Ежемесячные начисления, отклики и покупки появятся здесь.",
+      browseJobs: "Смотреть задачи"
+    },
+    notifications: {
+      eyebrow: "Обновления",
+      title: "Уведомления",
+      emptyTitle: "Уведомлений пока нет",
+      emptyBody: "Здесь появятся проверки задач, отклики, изменения статуса сделок и уведомления о настройке платежей.",
+      openJobs: "Открыть задачи"
+    }
+  }
+} as const;
+
+export type Dictionary = (typeof dictionaries)[WorkPayLanguage];
+
+export function normalizeLanguage(language?: string | null): WorkPayLanguage {
+  return language === "ru" || language?.startsWith("ru") ? "ru" : "en";
+}
+
+export function getDictionary(language: WorkPayLanguage = "en"): Dictionary {
   return dictionaries[language] ?? dictionaries.en;
 }

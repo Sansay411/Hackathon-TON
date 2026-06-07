@@ -1,10 +1,11 @@
 import { z } from "zod";
 import { isLikelyTonAddress } from "@/lib/ton/address";
 
-export const languageSchema = z.enum(["en", "ru", "kk"]);
+export const languageSchema = z.enum(["en", "ru"]);
 export const roleSchema = z.enum(["client", "freelancer", "both"]);
 
 export const profileUpdateSchema = z.object({
+  initData: z.string().optional(),
   language: languageSchema.optional(),
   role: roleSchema.optional(),
   bio: z.string().max(1000).optional(),
@@ -18,6 +19,7 @@ export const profileUpdateSchema = z.object({
 });
 
 export const walletConnectSchema = z.object({
+  initData: z.string().optional(),
   walletAddress: z.string().min(20),
   network: z.enum(["testnet", "mainnet"]).default("testnet")
 });
@@ -32,10 +34,12 @@ export const jobCreateSchema = z.object({
 });
 
 export const applyJobSchema = z.object({
+  initData: z.string().optional(),
   proposalText: z.string().min(20).max(5000)
 });
 
 export const paymentCreateSchema = z.object({
+  initData: z.string().optional(),
   dealId: z.string().min(1),
   asset: z.string().min(2).max(20),
   amount: z.string().regex(/^\d+(\.\d{1,9})?$/),

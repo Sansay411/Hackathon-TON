@@ -6,6 +6,9 @@ export type ApiErrorCode =
   | "forbidden"
   | "not_found"
   | "conflict"
+  | "telegram_required"
+  | "wallet_required"
+  | "setup_required"
   | "payment_setup_required"
   | "server_error";
 

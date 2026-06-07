@@ -56,16 +56,18 @@ export function WalletGateLink({
 export function WalletGateButton({
   className,
   blockedLabel = "Connect TON wallet to continue.",
-  connectedLabel = "Continue"
+  connectedLabel = "Continue",
+  onClick
 }: {
   className: string;
   blockedLabel?: string;
   connectedLabel?: string;
+  onClick?: () => void | Promise<void>;
 }) {
   const { isConnected } = useWalletAccess();
 
   return (
-    <button className={className} disabled={!isConnected} type="button">
+    <button className={className} disabled={!isConnected} onClick={onClick} type="button">
       {isConnected ? connectedLabel : blockedLabel}
     </button>
   );
@@ -75,8 +77,8 @@ export function WalletGateNotice() {
   const { statusLabel, telegramLabel, isTelegram } = useWalletAccess();
 
   return (
-    <div className="rounded-[20px] bg-white p-3 text-xs font-semibold leading-5 text-[#66735c]">
-      <p className="font-black text-[#182014]">Wallet gate</p>
+    <div className="rounded-[20px] bg-white p-3 text-xs font-semibold leading-5 text-[#64748b]">
+      <p className="font-black text-[#171c20]">Wallet gate</p>
       <p>{statusLabel}</p>
       {!isTelegram ? <p className="mt-1 font-black">{telegramLabel}</p> : null}
     </div>

@@ -19,13 +19,13 @@ export function RoleSelect() {
         return (
           <button
             className={`flex items-center gap-3 rounded-[24px] p-4 text-left font-black shadow-sm transition ${
-              selected === role.label ? "bg-[#182014] text-white" : "bg-white text-[#182014]"
+              selected === role.label ? "bg-[#171c20] text-white" : "bg-white text-[#171c20]"
             }`}
             key={role.label}
             onClick={() => setSelected(role.label)}
             type="button"
           >
-            <span className={`rounded-2xl p-3 ${selected === role.label ? "bg-[#c8ff45] text-[#182014]" : "bg-[#c8ff45]"}`}>
+            <span className={`rounded-2xl p-3 ${selected === role.label ? "bg-[#e6f7ff] text-[#171c20]" : "bg-[#e6f7ff]"}`}>
               <Icon className="h-5 w-5" />
             </span>
             {role.label}

@@ -6,51 +6,54 @@ import type { LucideIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { BriefcaseBusiness, Home, Plus, Search, UserRound } from "lucide-react";
 import { FloatingActionButton } from "@/components/mobile/FloatingActionButton";
+import { useLanguage } from "@/components/language-provider";
 
 type BottomNavItem = {
   href: Route;
-  label: string;
+  labelKey: "home" | "jobs" | "create" | "deals" | "profile";
   icon: LucideIcon;
   center?: boolean;
 };
 
 const items: BottomNavItem[] = [
-  { href: "/", label: "Home", icon: Home },
-  { href: "/marketplace", label: "Jobs", icon: Search },
-  { href: "/deals/new", label: "Create", icon: Plus, center: true },
-  { href: "/deals", label: "Deals", icon: BriefcaseBusiness },
-  { href: "/profile", label: "Profile", icon: UserRound }
+  { href: "/", labelKey: "home", icon: Home },
+  { href: "/marketplace", labelKey: "jobs", icon: Search },
+  { href: "/deals/new", labelKey: "create", icon: Plus, center: true },
+  { href: "/deals", labelKey: "deals", icon: BriefcaseBusiness },
+  { href: "/profile", labelKey: "profile", icon: UserRound }
 ];
 
 export function BottomNav() {
   const pathname = usePathname();
+  const { t } = useLanguage();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-md px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-      <div className="relative grid h-20 grid-cols-5 items-center rounded-[30px] border border-[#33412b] bg-[#11180f] px-2 shadow-[0_18px_50px_rgba(17,24,15,0.32)]">
+    <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-[390px] px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+      <div className="relative grid h-20 grid-cols-5 items-center rounded-[30px] border border-[#dfe3e8] bg-white/95 px-2 shadow-[0_18px_50px_rgba(0,101,142,0.16)] backdrop-blur-xl">
         <FloatingActionButton isActive={pathname === "/deals/new"} />
         {items.map((item) => {
           const Icon = item.icon;
+          const label = t.nav[item.labelKey];
           const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
           if (item.center) {
             return (
-              <Link key={item.label} className="flex flex-col items-center gap-1 pt-8 text-[11px] font-black text-[#c8ff45]" href={item.href}>
-                <span className="sr-only">Create</span>
-                {item.label}
+              <Link key={item.labelKey} className="flex flex-col items-center gap-1 pt-8 text-[11px] font-black text-[#00658e]" href={item.href}>
+                <span className="sr-only">{label}</span>
+                {label}
               </Link>
             );
           }
 
           return (
             <Link
-              key={item.label}
+              key={item.labelKey}
               className={`flex flex-col items-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-black transition ${
-                isActive ? "bg-[#c8ff45] text-[#11180f]" : "text-[#d7e5c9]"
+                isActive ? "bg-[#e6f7ff] text-[#00658e]" : "text-[#64748b]"
               }`}
               href={item.href}
             >
-              <Icon className={`h-5 w-5 ${isActive ? "text-[#11180f]" : "text-[#f4ffe9]"}`} strokeWidth={2.4} />
-              <span className={isActive ? "text-[#11180f]" : "text-[#d7e5c9]"}>{item.label}</span>
+              <Icon className={`h-5 w-5 ${isActive ? "text-[#00658e]" : "text-[#64748b]"}`} strokeWidth={2.4} />
+              <span className={isActive ? "text-[#00658e]" : "text-[#64748b]"}>{label}</span>
             </Link>
           );
         })}

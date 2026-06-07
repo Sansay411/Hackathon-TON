@@ -5,6 +5,19 @@ import { getBotConfig } from "@/lib/bot/config";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+let botPromise: ReturnType<typeof createInitializedBot> | null = null;
+
+async function createInitializedBot() {
+  const bot = createWorkPayBot();
+  await bot.init();
+  return bot;
+}
+
+function getInitializedBot() {
+  botPromise ??= createInitializedBot();
+  return botPromise;
+}
+
 export async function POST(request: Request) {
   const { webhookSecret } = getBotConfig();
   if (webhookSecret) {
@@ -16,7 +29,7 @@ export async function POST(request: Request) {
 
   try {
     const update = await request.json();
-    const bot = createWorkPayBot();
+    const bot = await getInitializedBot();
     await bot.handleUpdate(update);
     return NextResponse.json({ ok: true });
   } catch (error) {

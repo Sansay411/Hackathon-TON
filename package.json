@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "tsx --test tests/*.test.ts",
     "typecheck": "if exist .next rmdir /s /q .next && next build",
     "bot:dev": "tsx scripts/bot-dev.ts",
     "bot:setup": "tsx scripts/setup-bot.ts"
@@ -37,6 +38,7 @@
     "autoprefixer": "^10.4.21",
     "eslint": "^9.28.0",
     "eslint-config-next": "^15.3.3",
+    "playwright-core": "^1.60.0",
     "postcss": "^8.5.4",
     "tailwindcss": "^3.4.17",
     "tsx": "^4.22.4",

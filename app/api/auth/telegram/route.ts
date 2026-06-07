@@ -11,7 +11,7 @@ export async function POST(request: Request) {
 
   try {
     const result = verifyTelegramInitData(initData, botToken);
-    return NextResponse.json(result);
+    return NextResponse.json({ ...result, verified: true });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Invalid Telegram auth" }, { status: 401 });
   }

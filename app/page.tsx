@@ -1,127 +1,186 @@
+"use client";
+
 import Link from "next/link";
 import type { Route } from "next";
-import { ArrowRight, Bot, CheckCircle2, LockKeyhole, Search, Send, Sparkles, WalletCards } from "lucide-react";
-import { DealCard } from "@/components/mobile/DealCard";
+import { Bell, BriefcaseBusiness, Building2, CheckCircle2, Code2, PlusCircle, Search, ShieldCheck, Sparkles, WalletCards, Zap } from "lucide-react";
 import { DemoSeedButton } from "@/components/mobile/DemoSeedButton";
-import { EnergyCard } from "@/components/mobile/EnergyCard";
-import { JobCard } from "@/components/mobile/JobCard";
+import { LaunchOnboarding } from "@/components/mobile/LaunchOnboarding";
 import { MobileShell } from "@/components/mobile/MobileShell";
-import { Onboarding } from "@/components/mobile/Onboarding";
-import { StatsCard } from "@/components/mobile/StatsCard";
-import { WalletMiniCard } from "@/components/mobile/WalletMiniCard";
-import { WorkPayHero } from "@/components/mobile/WorkPayHero";
+import { useLanguage } from "@/components/language-provider";
 import { demoJobs, demoProfile } from "@/lib/demo/data";
 
 export default function HomePage() {
   return (
     <MobileShell>
-      <div className="space-y-5">
-        <WorkPayHero />
-        <DemoSeedButton />
-        <Onboarding />
-        <WalletMiniCard />
-        <EnergyCard balance={demoProfile.energyBalance} />
-        <StatsCard />
-
-        <section className="grid grid-cols-3 gap-3">
-          <QuickAction href="/deals/new" icon={<Send className="h-5 w-5" />} label="Create" />
-          <QuickAction href="/marketplace" icon={<Search className="h-5 w-5" />} label="Jobs" />
-          <QuickAction href="/wallet" icon={<WalletCards className="h-5 w-5" />} label="Wallet" />
-        </section>
-
-        <DealCard />
-
-        <section className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-black">Recommended jobs</h2>
-            <Link className="text-xs font-black text-[#229ED9]" href="/marketplace">View all</Link>
-          </div>
-          {demoJobs.slice(0, 2).map((job) => <JobCard key={job.id} job={job} />)}
-        </section>
-
-        <section className="rounded-[30px] border border-white/70 bg-[#fbfff5] p-5 shadow-[0_14px_34px_rgba(17,24,15,0.09)]">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-black text-[#229ED9]">Live deal pulse</p>
-              <h2 className="mt-1 text-2xl font-black">Landing Page Design</h2>
-            </div>
-            <span className="rounded-full bg-[#c8ff45] px-3 py-1 text-xs font-black text-[#182014]">Funded</span>
-          </div>
-          <div className="mt-5 space-y-3">
-            <PulseRow done label="AI terms reviewed" />
-            <PulseRow done label="TON escrow prepared" />
-            <PulseRow label="Waiting for delivery" />
-          </div>
-        </section>
-
-        <section className="grid grid-cols-2 gap-3">
-          <div className="rounded-[26px] border border-white/70 bg-[#fbfff5] p-4 shadow-[0_12px_30px_rgba(17,24,15,0.08)]">
-            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-2xl bg-[#182014] text-[#c8ff45]">
-              <Sparkles className="h-5 w-5" />
-            </div>
-            <p className="text-sm font-black">AI risk review</p>
-            <p className="mt-1 text-xs font-medium leading-5 text-[#66735c]">AI checks terms before funding.</p>
-          </div>
-          <div className="rounded-[26px] border border-white/70 bg-[#fbfff5] p-4 shadow-[0_12px_30px_rgba(17,24,15,0.08)]">
-            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-2xl bg-[#c8ff45] text-[#182014]">
-              <LockKeyhole className="h-5 w-5" />
-            </div>
-            <p className="text-sm font-black">TON-secured deals</p>
-            <p className="mt-1 text-xs font-medium leading-5 text-[#66735c]">Funds release after approval.</p>
-          </div>
-        </section>
-        <section className="rounded-[26px] border border-white/70 bg-[#fbfff5] p-4 shadow-[0_12px_30px_rgba(17,24,15,0.08)]">
-          <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-2xl bg-[#229ED9] text-white">
-            <WalletCards className="h-5 w-5" />
-          </div>
-          <p className="text-sm font-black">STON.fi token payments</p>
-          <p className="mt-1 text-xs font-medium leading-5 text-[#66735c]">Pay with supported TON ecosystem tokens once provider configuration is added.</p>
-        </section>
-        <section className="rounded-[30px] bg-[#182014] p-5 text-white shadow-[0_18px_38px_rgba(17,24,15,0.22)]">
-          <p className="text-sm font-black text-[#c8ff45]">How WorkPay moves</p>
-          <div className="mt-4 grid grid-cols-3 gap-2">
-            <Step label="Review" />
-            <Step label="Fund" />
-            <Step label="Release" />
-          </div>
-        </section>
-
-        <Link className="flex items-center justify-between rounded-[26px] bg-[#182014] p-4 text-white shadow-[0_16px_30px_rgba(17,24,15,0.2)]" href="/deals/new">
-          <div>
-            <p className="text-sm font-black">Ready to protect a deal?</p>
-            <p className="mt-1 text-xs font-medium text-white/70">Start with clear terms and verified funding.</p>
-          </div>
-          <ArrowRight className="h-5 w-5 text-[#c8ff45]" />
-        </Link>
-      </div>
+      <LaunchOnboarding>
+        <div className="space-y-5">
+          <TopBar />
+          <Hero />
+          <Stats />
+          <QuickActions />
+          <ActiveDeal />
+          <RecommendedJobs />
+          <DemoSeedButton />
+        </div>
+      </LaunchOnboarding>
     </MobileShell>
   );
 }
 
-function QuickAction({ href, icon, label }: { href: Route; icon: React.ReactNode; label: string }) {
+function TopBar() {
+  const { t } = useLanguage();
+
   return (
-    <Link className="rounded-[24px] border border-white/70 bg-[#fbfff5] p-4 text-center shadow-[0_12px_30px_rgba(17,24,15,0.08)]" href={href}>
-      <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-[#c8ff45] text-[#182014]">{icon}</span>
-      <p className="mt-2 text-xs font-black">{label}</p>
+    <header className="flex items-center justify-between gap-3 rounded-[24px] border border-white/70 bg-white/80 px-4 py-3 shadow-[0_8px_30px_rgba(0,101,142,0.08)] backdrop-blur-xl">
+      <div className="flex items-center gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#001e2e] text-white ring-2 ring-white">
+          <ShieldCheck className="h-5 w-5 text-[#85cfff]" />
+        </div>
+        <div className="min-w-0">
+          <p className="text-base font-black text-[#00658e]">WorkPay</p>
+          <p className="truncate text-[11px] font-semibold text-[#64748b]">{t.home.subtitle}</p>
+        </div>
+      </div>
+      <div className="flex shrink-0 items-center gap-2">
+        <Link className="flex h-8 items-center gap-1.5 whitespace-nowrap rounded-full border border-[#c7e7ff] bg-[#e6f7ff] px-2.5 text-[11px] font-bold leading-none text-[#00658e]" href="/wallet">
+          <WalletCards className="h-3.5 w-3.5" />
+          0 TON
+        </Link>
+        <Link className="relative flex h-10 w-10 items-center justify-center rounded-full border border-[#dfe3e8] bg-white text-[#64748b]" href="/notifications">
+          <Bell className="h-4 w-4" />
+          <span className="absolute right-2 top-2 h-2 w-2 rounded-full border-2 border-white bg-[#f04438]" />
+        </Link>
+      </div>
+    </header>
+  );
+}
+
+function Hero() {
+  const { t } = useLanguage();
+
+  return (
+    <section className="relative overflow-hidden rounded-[24px] border border-white bg-gradient-to-br from-[#eaf7ff] to-white p-5 shadow-[0_14px_36px_rgba(0,101,142,0.08)]">
+      <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-[#c7e7ff]/45 blur-2xl" />
+      <div className="absolute -bottom-10 -left-8 h-28 w-28 rounded-full bg-[#acedff]/45 blur-2xl" />
+      <div className="relative">
+        <h1 className="max-w-[275px] text-[28px] font-black leading-[1.08] tracking-normal text-[#001e2e]">{t.home.title}</h1>
+        <p className="mt-3 max-w-[280px] text-sm font-semibold leading-6 text-[#64748b]">{t.home.description}</p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Pill icon={<ShieldCheck className="h-3.5 w-3.5" />} label={t.home.tonSecured} />
+          <Pill icon={<Sparkles className="h-3.5 w-3.5" />} label={t.home.aiReviewed} tone="cyan" />
+          <Pill icon={<WalletCards className="h-3.5 w-3.5" />} label={t.home.stonfiReady} />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Pill({ icon, label, tone = "blue" }: { icon: React.ReactNode; label: string; tone?: "blue" | "cyan" }) {
+  return (
+    <span className={`inline-flex items-center gap-1.5 rounded-full border border-white/80 bg-white/80 px-3 py-1.5 text-xs font-bold backdrop-blur ${tone === "cyan" ? "text-[#00a3be]" : "text-[#00658e]"}`}>
+      {icon}
+      {label}
+    </span>
+  );
+}
+
+function Stats() {
+  const { t } = useLanguage();
+  const stats = [
+    { label: t.home.energy, value: demoProfile.energyBalance, icon: <Zap className="h-5 w-5 text-[#f79009]" /> },
+    { label: t.home.activeDeals, value: 3, icon: <WalletCards className="h-5 w-5 text-[#00658e]" /> },
+    { label: t.home.success, value: `${demoProfile.successRate}%`, icon: <CheckCircle2 className="h-5 w-5 text-[#12b76a]" /> }
+  ];
+
+  return (
+    <section className="grid grid-cols-3 gap-3">
+      {stats.map((stat) => (
+        <div className="min-h-[88px] rounded-2xl border border-[#dfe3e8] bg-white p-3 text-center shadow-[0_8px_24px_rgba(0,101,142,0.06)]" key={stat.label}>
+          <div className="mx-auto flex h-7 w-7 items-center justify-center">{stat.icon}</div>
+          <p className="mt-1 text-lg font-black text-[#171c20]">{stat.value}</p>
+          <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.5px] text-[#64748b]">{stat.label}</p>
+        </div>
+      ))}
+    </section>
+  );
+}
+
+function QuickActions() {
+  const { t } = useLanguage();
+
+  return (
+    <section className="grid grid-cols-3 gap-3">
+      <ActionButton href="/deals/new" primary icon={<PlusCircle className="h-4 w-4" />} label={t.home.createDeal} />
+      <ActionButton href="/marketplace" icon={<Search className="h-4 w-4" />} label={t.home.findWork} />
+      <ActionButton href="/wallet" icon={<Building2 className="h-4 w-4" />} label={t.home.deposit} />
+    </section>
+  );
+}
+
+function ActionButton({ href, icon, label, primary = false }: { href: Route; icon: React.ReactNode; label: string; primary?: boolean }) {
+  return (
+    <Link
+      className={`inline-flex h-11 min-w-0 items-center justify-center gap-1.5 rounded-xl px-2 text-[12px] font-bold shadow-sm ${
+        primary ? "bg-[#00658e] text-white shadow-[0_8px_20px_rgba(0,101,142,0.18)]" : "border border-[#bec8d1] bg-white text-[#171c20]"
+      }`}
+      href={href}
+    >
+      {icon}
+      <span className="truncate">{label}</span>
     </Link>
   );
 }
 
-function PulseRow({ label, done = false }: { label: string; done?: boolean }) {
+function ActiveDeal() {
+  const { t } = useLanguage();
+
   return (
-    <div className="flex items-center gap-3 rounded-[20px] bg-white p-3 shadow-sm">
-      <span className={`flex h-8 w-8 items-center justify-center rounded-full ${done ? "bg-[#229ED9] text-white" : "bg-[#c8ff45] text-[#182014]"}`}>
-        {done ? <CheckCircle2 className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
-      </span>
-      <p className="text-sm font-black">{label}</p>
-    </div>
+    <section className="space-y-2">
+      <h2 className="px-1 text-xl font-black text-[#171c20]">{t.home.activeDealsTitle}</h2>
+      <Link className="block rounded-2xl border border-[#dfe3e8] bg-white p-5 shadow-[0_8px_24px_rgba(0,101,142,0.06)]" href="/deals/foundation-preview">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1 overflow-hidden pr-2">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-[#00658e]" />
+              <p className="text-[10px] font-black uppercase tracking-[0.5px] text-[#00658e]">{t.home.inProgress}</p>
+            </div>
+            <h3 className="mt-2 max-w-full truncate text-base font-black text-[#171c20]">Landing Page Design & Dev</h3>
+            <p className="mt-1 text-sm font-medium text-[#64748b]">{t.home.dueIn3Days}</p>
+          </div>
+          <div className="w-[94px] shrink-0 text-right">
+            <p className="text-sm font-black text-[#171c20]">20.00 TON</p>
+            <p className="text-[10px] font-bold text-[#64748b]">{t.home.escrowed}</p>
+          </div>
+        </div>
+        <div className="mt-5 h-1.5 overflow-hidden rounded-full bg-[#e5e8ee]">
+          <div className="h-full w-[45%] rounded-full bg-[#00658e]" />
+        </div>
+      </Link>
+    </section>
   );
 }
 
-function Step({ label }: { label: string }) {
+function RecommendedJobs() {
+  const { t } = useLanguage();
+
   return (
-    <div className="rounded-[20px] bg-white/10 p-3 text-center">
-      <p className="text-xs font-black text-white">{label}</p>
-    </div>
+    <section className="space-y-3 pb-3">
+      <div className="flex items-end justify-between px-1">
+        <h2 className="text-xl font-black text-[#171c20]">{t.home.recommendedJobs}</h2>
+        <Link className="text-xs font-bold text-[#00658e]" href="/marketplace">{t.home.seeAll}</Link>
+      </div>
+      {demoJobs.slice(0, 2).map((job, index) => (
+        <Link className="flex items-center gap-4 rounded-2xl border border-[#dfe3e8] bg-white p-4 shadow-[0_6px_20px_rgba(0,101,142,0.06)]" href={`/jobs/${job.id}` as Route} key={job.id}>
+          <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${index === 0 ? "bg-[#e6fbff] text-[#00a3be]" : "bg-[#eef7ff] text-[#00658e]"}`}>
+            {index === 0 ? <Code2 className="h-5 w-5" /> : <BriefcaseBusiness className="h-5 w-5" />}
+          </div>
+          <div className="min-w-0 flex-1">
+            <h3 className="line-clamp-2 text-base font-black leading-snug text-[#171c20]">{job.title}</h3>
+            <p className="mt-0.5 truncate text-sm font-medium text-[#64748b]">{job.category} • {t.home.tonNative}</p>
+          </div>
+          <p className="shrink-0 text-sm font-black text-[#00658e]">{job.budgetAmount} {job.budgetToken}</p>
+        </Link>
+      ))}
+    </section>
   );
 }

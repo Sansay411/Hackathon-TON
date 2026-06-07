@@ -12,18 +12,18 @@ export function WalletMiniCard() {
   const network = getTonNetwork();
 
   return (
-    <div className="rounded-[26px] border border-white/70 bg-[#fbfff5] p-4 shadow-[0_12px_30px_rgba(17,24,15,0.08)]">
+    <div className="rounded-[26px] border border-white/70 bg-[#ffffff] p-4 shadow-[0_12px_30px_rgba(17,24,15,0.08)]">
       <div className="flex items-center gap-3">
         <div className="rounded-2xl bg-[#229ED9] p-3 text-white">
           <WalletCards className="h-5 w-5" />
         </div>
         <div>
-          <p className="text-xs font-black text-[#66735c]">TON wallet</p>
+          <p className="text-xs font-black text-[#64748b]">TON wallet</p>
           <p className="text-sm font-black">{wallet ? truncateTonAddress(wallet.account.address) : "Not connected"}</p>
-          <p className="text-[11px] font-semibold text-[#66735c]">
+          <p className="text-[11px] font-semibold text-[#64748b]">
             {wallet ? `${network} connected` : `${network} setup required for active deal actions`}
           </p>
-          <p className="text-[11px] font-black text-[#66735c]">{isTelegram ? "Inside Telegram" : "Outside Telegram"}</p>
+          <p className="text-[11px] font-black text-[#64748b]">{isTelegram ? "Inside Telegram" : "Outside Telegram"}</p>
         </div>
       </div>
     </div>

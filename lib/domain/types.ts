@@ -48,7 +48,7 @@ export type AiReview = {
   suggestedTerms: string[];
 };
 
-export type WorkPayLanguage = "en" | "ru" | "kk";
+export type WorkPayLanguage = "en" | "ru";
 
 export type ProfileRole = "client" | "freelancer" | "both";
 

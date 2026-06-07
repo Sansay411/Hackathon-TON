@@ -1,0 +1,11 @@
+.next
+node_modules
+*.log
+cloudflared.out.log
+cloudflared.err.log
+next-dev.out.log
+next-dev.err.log
+next-start.out.log
+next-start.err.log
+tunnel.out.log
+tunnel.err.log

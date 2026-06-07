@@ -10,9 +10,9 @@ export function StatsCard() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[22px] bg-[#fbfff5] p-3 text-center shadow-sm">
+    <div className="rounded-[22px] bg-[#ffffff] p-3 text-center shadow-sm">
       <p className="text-lg font-black">{value}</p>
-      <p className="text-xs font-bold text-[#66735c]">{label}</p>
+      <p className="text-xs font-bold text-[#64748b]">{label}</p>
     </div>
   );
 }

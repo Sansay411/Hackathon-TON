@@ -110,6 +110,54 @@ The Main Mini App profile button still needs to be configured manually in BotFat
 
 See `docs/telegram-bot.md` for the command list, webhook setup, local development, production deployment, and troubleshooting.
 
+## Local Development
+
+```bash
+npm.cmd install
+npm.cmd run dev
+npm.cmd run bot:setup
+```
+
+Use `npm.cmd` on Windows because PowerShell may block `npm.ps1`. Telegram-facing Mini App buttons require a public HTTPS URL, so local Telegram testing needs a tunnel or deployed domain in `NEXT_PUBLIC_APP_URL`.
+
+## TonConnect Setup
+
+`/tonconnect-manifest.json` is served by the app and must be publicly reachable. Set:
+
+```bash
+NEXT_PUBLIC_APP_URL=https://your-domain.example
+NEXT_PUBLIC_TONCONNECT_MANIFEST_URL=https://your-domain.example/tonconnect-manifest.json
+NEXT_PUBLIC_TON_NETWORK=testnet
+NEXT_PUBLIC_ENABLE_MAINNET=false
+```
+
+The manifest uses `public/workpay-icon.png`. Wallet acceptance of a transaction is not payment confirmation; WorkPay only treats payment as funded after backend verification.
+
+## Testnet Payment Setup
+
+Direct TON payment preparation requires:
+
+```bash
+ESCROW_WALLET_ADDRESS=
+TONCENTER_API_KEY=
+TONAPI_KEY=
+```
+
+If `ESCROW_WALLET_ADDRESS` is missing, `/api/payments/create` returns `setup_required`. If provider keys are missing, verification remains `setup_required`. Mainnet transaction generation is disabled unless `NEXT_PUBLIC_ENABLE_MAINNET=true`.
+
+## Known Limitations
+
+- STON.fi Omniston quote/swap/tracking remains setup-required until `@ston-fi/omniston-sdk-react`, `@ston-fi/api`, `@ton/core`, and provider config are wired.
+- Real TON payment verification requires TonAPI or Toncenter provider setup.
+- Real Mira is used only when `MIRA_API_KEY` or `DEEPSEEK_API_KEY` is configured; otherwise the development provider is labeled honestly.
+- Supabase RLS policies are still broad foundation policies and should be tightened before production.
+
+## Security Notes
+
+- `TELEGRAM_BOT_TOKEN`, `BOT_WEBHOOK_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`, `TONAPI_KEY`, `TONCENTER_API_KEY`, and `MIRA_API_KEY` are server-side only.
+- Do not expose wallet private keys or mnemonics. WorkPay uses TonConnect and never touches user keys.
+- Do not mark payments funded from frontend wallet callbacks; verify destination, sender, amount, reference, network, uniqueness, and finality on the backend.
+
 ## TON Architecture
 
 TON runs in testnet by default through `NEXT_PUBLIC_TON_NETWORK=testnet`.
