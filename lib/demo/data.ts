@@ -1,5 +1,29 @@
 import type { EnergyTransaction, JobApplication, MarketplaceJob, Profile } from "@/lib/domain/types";
 
+export const demoDealScenario = {
+  id: "foundation-preview",
+  title: "WorkPay receipt and escrow proof implementation",
+  description:
+    "Freelancer will implement the completed deal receipt flow for WorkPay, including TON funding proof, release proof, setup-required states, and Telegram share text.",
+  amount: "20",
+  token: "TON",
+  deadline: "2026-06-21",
+  deliverables: [
+    "Receipt page for completed and waiting-payment deals",
+    "Funding transaction hash section",
+    "Release transaction hash section",
+    "TON proof status copy",
+    "Telegram share text"
+  ],
+  acceptanceCriteria: [
+    "Receipt never claims funding from wallet approval alone",
+    "Funding status depends on server-side TONCenter/TonAPI verification",
+    "Missing provider keys show setup-required state",
+    "Receipt is readable on Telegram mobile WebView"
+  ],
+  riskContextShort: "Payment proof must be server verified before completion."
+};
+
 export const demoProfile: Profile = {
   id: "demo-profile",
   telegramId: "demo-telegram",
@@ -23,38 +47,62 @@ export const demoProfile: Profile = {
 
 export const demoJobs: MarketplaceJob[] = [
   {
-    id: "ton-startup-landing",
+    id: "workpay-miniapp-onboarding",
     clientId: "demo-client",
-    title: "Build a landing page for my TON startup",
+    title: "Design WorkPay Mini App onboarding",
     description:
-      "Create a polished responsive landing page for a TON payment product with clear hero, wallet CTA, pricing block, and Telegram Mini App launch section.",
-    category: "Design",
-    budgetAmount: "450",
-    budgetToken: "USDT",
-    deadline: "2026-06-20",
+      "Create a mobile-first Telegram Mini App onboarding flow for WorkPay. The flow should collect language, role, skills, portfolio links, and explain that TON wallet connection is required for applying, accepting deals, escrow funding, and reputation.",
+    category: "Telegram Mini App",
+    budgetAmount: "120",
+    budgetToken: "TON",
+    deadline: "2026-06-18",
     status: "published",
-    aiScore: 84,
+    aiScore: 92,
     aiRisk: "low",
-    aiMissingItems: ["Final brand assets", "Analytics requirement"],
-    aiSuggestedTerms: "Add acceptance criteria, source file handoff, and two revision rounds.",
+    deliverables: [
+      "Five-step onboarding UI for language, role, skills, portfolio, and wallet education",
+      "Responsive Telegram Mini App layout for 390px and 430px mobile widths",
+      "Final copy in English and Russian",
+      "Component handoff notes for implementation"
+    ],
+    acceptanceCriteria: [
+      "No bottom navigation is visible during onboarding",
+      "Existing Telegram profile data is reused and not requested manually",
+      "Wallet requirement is explained without claiming payment confirmation",
+      "The flow can be completed in under 90 seconds"
+    ],
+    aiMissingItems: ["Exact analytics events for onboarding completion"],
+    aiSuggestedTerms: "Limit the scope to onboarding screens and copy; implementation wiring is a separate milestone.",
     createdAt: new Date("2026-06-05T09:00:00Z").toISOString(),
     updatedAt: new Date("2026-06-05T09:00:00Z").toISOString()
   },
   {
-    id: "telegram-bot-polish",
+    id: "ton-escrow-receipt-flow",
     clientId: "demo-client",
-    title: "Polish Telegram bot onboarding",
+    title: "Build TON escrow receipt flow",
     description:
-      "Improve bot start flow, command menu, Mini App deep links, and first-launch copy for a crypto productivity product.",
-    category: "Telegram",
-    budgetAmount: "180",
+      "Implement a WorkPay receipt screen for completed freelance deals. The receipt should show client, freelancer, deal amount, escrow funding transaction, release transaction, TON proof status, and share text for Telegram.",
+    category: "TON Payments",
+    budgetAmount: "95",
     budgetToken: "TON",
-    deadline: "2026-06-14",
+    deadline: "2026-06-19",
     status: "published",
-    aiScore: 76,
-    aiRisk: "medium",
-    aiMissingItems: ["Notification copy", "BotFather assets"],
-    aiSuggestedTerms: "Define supported commands and Mini App launch paths before implementation.",
+    aiScore: 89,
+    aiRisk: "low",
+    deliverables: [
+      "Receipt page with deal title, client, freelancer, amount, and status",
+      "TON proof section for funding and release transaction hashes",
+      "Telegram share text for completed deal",
+      "Empty states for missing provider configuration"
+    ],
+    acceptanceCriteria: [
+      "Wallet approval is never shown as payment confirmation",
+      "Receipt shows funded/completed only after server-side verification",
+      "Missing TONCenter or escrow config displays setup-required state",
+      "Share text includes deal id and proof status"
+    ],
+    aiMissingItems: ["Exact wording for public share text"],
+    aiSuggestedTerms: "Define proof fields and setup-required states before connecting final transaction verification.",
     createdAt: new Date("2026-06-04T12:00:00Z").toISOString(),
     updatedAt: new Date("2026-06-04T12:00:00Z").toISOString()
   },
@@ -71,6 +119,18 @@ export const demoJobs: MarketplaceJob[] = [
     status: "published",
     aiScore: 88,
     aiRisk: "low",
+    deliverables: [
+      "Server route for monthly free Energy grant",
+      "Server route for application Energy spend",
+      "Energy transaction ledger with job/application references",
+      "Tests for duplicate spend and insufficient balance"
+    ],
+    acceptanceCriteria: [
+      "Energy balance cannot go below zero",
+      "Duplicate applications do not spend Energy twice",
+      "All balance changes are written server-side",
+      "Monthly grant can be claimed only once per month"
+    ],
     aiMissingItems: ["Exact RLS ownership model"],
     aiSuggestedTerms: "All balance changes must be server-side and auditable.",
     createdAt: new Date("2026-06-03T12:00:00Z").toISOString(),
@@ -81,7 +141,7 @@ export const demoJobs: MarketplaceJob[] = [
 export const demoApplications: JobApplication[] = [
   {
     id: "application-demo-1",
-    jobId: "ton-startup-landing",
+    jobId: "workpay-miniapp-onboarding",
     freelancerId: demoProfile.id,
     proposalText: "I can deliver a Telegram-native landing page with TON wallet CTA, responsive sections, and clean handoff.",
     energyCost: 1,
@@ -111,7 +171,7 @@ export const demoEnergyTransactions: EnergyTransaction[] = [
     amount: -1,
     type: "application_spend",
     reason: "Applied to TON startup landing job",
-    relatedJobId: "ton-startup-landing",
+    relatedJobId: "workpay-miniapp-onboarding",
     relatedApplicationId: "application-demo-1",
     paymentId: null,
     createdAt: new Date("2026-06-05T10:15:00Z").toISOString()

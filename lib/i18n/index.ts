@@ -287,12 +287,6 @@ export const dictionaries = {
       dealCreatedPrefix: "Deal created:",
       noDealId: "Deal creation route returned no id"
     },
-    aiReview: {
-      defaultLabel: "Mira AI review",
-      clarity: "clarity",
-      miraConnected: "Mira connected",
-      devProvider: "Development provider"
-    },
     mira: {
       title: "Mira Intent Review",
       subtitle: "Mira has no public API yet, so WorkPay uses Telegram intent sourcing.",
@@ -653,12 +647,6 @@ export const dictionaries = {
       openInsideTelegram: "Откройте в Telegram, чтобы использовать действия Mini App.",
       dealCreatedPrefix: "Сделка создана:",
       noDealId: "Маршрут создания сделки не вернул id"
-    },
-    aiReview: {
-      defaultLabel: "AI-проверка Mira",
-      clarity: "ясность",
-      miraConnected: "Mira подключена",
-      devProvider: "Тестовый провайдер"
     },
     mira: {
       title: "Проверка через Mira",

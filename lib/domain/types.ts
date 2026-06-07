@@ -76,6 +76,8 @@ export type MarketplaceJob = {
   status: JobStatus;
   aiScore: number | null;
   aiRisk: AiReview["riskLevel"] | null;
+  deliverables: string[];
+  acceptanceCriteria: string[];
   aiMissingItems: string[];
   aiSuggestedTerms: string | null;
   createdAt: string;

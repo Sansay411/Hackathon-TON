@@ -2,26 +2,17 @@
 
 import { useParams } from "next/navigation";
 import { ShieldAlert, Zap } from "lucide-react";
-import { AiReviewCard } from "@/components/mobile/AiReviewCard";
 import { MiraIntentPanel } from "@/components/mira/MiraIntentPanel";
 import { MobileShell } from "@/components/mobile/MobileShell";
 import { WalletGateLink } from "@/components/wallet-access";
 import { useLanguage } from "@/components/language-provider";
 import { demoJobs } from "@/lib/demo/data";
-import type { AiReview } from "@/lib/domain/types";
 
 export default function JobDetailPage() {
   const params = useParams<{ id: string }>();
   const id = params.id;
   const { t } = useLanguage();
   const job = demoJobs.find((item) => item.id === id) ?? demoJobs[0];
-  const review: AiReview = {
-    clarityScore: job.aiScore ?? 72,
-    riskLevel: job.aiRisk ?? "medium",
-    missingItems: job.aiMissingItems,
-    disputeRisks: ["Scope changes must be confirmed before extra work starts."],
-    suggestedTerms: [job.aiSuggestedTerms ?? "Define deliverables and acceptance criteria before funding."]
-  };
 
   return (
     <MobileShell>
@@ -41,7 +32,6 @@ export default function JobDetailPage() {
             </div>
           </div>
         </section>
-        <AiReviewCard review={review} label={t.jobDetail.miraJobReview} />
         <MiraIntentPanel
           input={{
             type: "job_review",
@@ -51,7 +41,8 @@ export default function JobDetailPage() {
             budgetAmount: job.budgetAmount,
             budgetToken: job.budgetToken,
             deadline: job.deadline ?? undefined,
-            deliverables: job.aiMissingItems,
+            deliverables: job.deliverables,
+            acceptanceCriteria: job.acceptanceCriteria,
             riskContextShort: job.aiRisk ?? undefined
           }}
         />
