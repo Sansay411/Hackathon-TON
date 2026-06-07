@@ -5,7 +5,6 @@ export type TonTransferRequest = {
   amount: string;
   asset: string;
   comment?: string;
-  from?: string;
 };
 
 export function buildTonTransferRequest(input: TonTransferRequest) {
@@ -13,7 +12,6 @@ export function buildTonTransferRequest(input: TonTransferRequest) {
   return {
     validUntil: Math.floor(Date.now() / 1000) + 600,
     network: process.env.NEXT_PUBLIC_TON_NETWORK === "mainnet" ? -239 : -3,
-    from: input.from,
     messages: [
       {
         address: input.destination,

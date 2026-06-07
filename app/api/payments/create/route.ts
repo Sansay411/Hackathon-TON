@@ -58,8 +58,7 @@ export async function POST(request: Request) {
       destination: escrowWallet,
       amount: amountNano,
       asset: "TON",
-      comment: reference,
-      from: profileResult.profile.walletAddress
+      comment: reference
     }),
     auditEvent: "payment_started"
   });
