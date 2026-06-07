@@ -6,7 +6,8 @@ import { Bot, ReceiptText, ShieldCheck } from "lucide-react";
 import { AiRiskBadge } from "@/components/mobile/AiRiskBadge";
 import { DealTimeline } from "@/components/mobile/DealTimeline";
 import { MobileShell } from "@/components/mobile/MobileShell";
-import { MiraIntentPanel } from "@/components/mira-intent-panel";
+import { MiraIntentPanel } from "@/components/mira/MiraIntentPanel";
+import { SmartSettlementCard } from "@/components/stonfi/SmartSettlementCard";
 import { PaymentStatusCard } from "@/components/mobile/PaymentStatusCard";
 import { useLanguage } from "@/components/language-provider";
 import type { AiReview } from "@/lib/domain/types";
@@ -88,6 +89,7 @@ export default function DealDetailPage() {
           }}
         />
 
+        <SmartSettlementCard dealId={id} settlementAmount="50" payAsset="TON" settlementAsset="USDT" />
         <PaymentStatusCard dealId={id} amount="20" asset="TON" />
         <DealTimeline />
         <Link className="flex items-center justify-center gap-2 rounded-[22px] bg-[#229ED9] px-4 py-3 font-black text-white" href={`/deals/${id}/receipt`}>

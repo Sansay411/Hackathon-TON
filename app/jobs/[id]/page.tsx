@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { ShieldAlert, Zap } from "lucide-react";
 import { AiReviewCard } from "@/components/mobile/AiReviewCard";
-import { MiraIntentPanel } from "@/components/mira-intent-panel";
+import { MiraIntentPanel } from "@/components/mira/MiraIntentPanel";
 import { MobileShell } from "@/components/mobile/MobileShell";
 import { WalletGateLink } from "@/components/wallet-access";
 import { useLanguage } from "@/components/language-provider";

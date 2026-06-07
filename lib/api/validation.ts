@@ -54,3 +54,11 @@ export const paymentVerifySchema = z.object({
   expectedAsset: z.string().min(2).max(20).default("TON"),
   network: z.enum(["testnet", "mainnet"]).default("testnet")
 });
+
+export const stonfiQuoteSchema = z.object({
+  fromAsset: z.string().min(2).max(20),
+  toAsset: z.string().min(2).max(20),
+  settlementAmount: z.string().regex(/^\d+(\.\d{1,9})?$/),
+  network: z.enum(["testnet", "mainnet"]).default("mainnet"),
+  dealId: z.string().min(1).max(120).optional()
+});

@@ -1,8 +1,12 @@
 import type { StonfiQuoteRequest } from "@/lib/stonfi/types";
 
+// Swap EXECUTION (building and sending the settlement transaction) is the next
+// step after a quote. WorkPay never fakes a successful swap: until the on-chain
+// transaction builder + TonConnect signing flow is wired, this returns an honest
+// setup-required state.
 export async function createStonfiSwap(request: StonfiQuoteRequest) {
-  if (!process.env.STONFI_API_URL || process.env.STONFI_ENABLED !== "true") {
-    return { status: "setup_required" as const, message: "Configure STON.fi Omniston before creating real swap transactions." };
-  }
-  throw new Error(`STON.fi swap builder is configured but no Omniston transaction builder is wired for ${request.offerAsset}.`);
+  return {
+    status: "setup_required" as const,
+    message: `STON.fi swap execution for ${request.fromAsset} -> ${request.toAsset} is not wired yet. Quotes are live; transaction signing is the next step.`
+  };
 }

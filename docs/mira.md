@@ -30,9 +30,10 @@ User can:
 WorkPay parses and displays the Mira review
 ```
 
-The implementation lives in `lib/mira/intent.ts` (payload/prompt/parse helpers)
-and `components/mira-intent-panel.tsx` (the UI panel embedded on Job Detail,
-Deal Detail, and the Create Job/Deal AI review step).
+The implementation lives in `lib/mira/intent.ts` (payload/prompt/parse helpers),
+`components/mira/MiraIntentPanel.tsx` (the UI panel embedded on Job Detail,
+Deal Detail, and the Create Job/Deal AI review step), and
+`components/mira/MiraReviewResult.tsx` (the parsed review renderer).
 
 ### Deep link
 

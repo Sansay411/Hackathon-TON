@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Bot, CalendarDays, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/components/language-provider";
-import { MiraIntentPanel } from "@/components/mira-intent-panel";
+import { MiraIntentPanel } from "@/components/mira/MiraIntentPanel";
 import type { MiraIntentType } from "@/lib/mira/intent";
 
 export function DealForm({ intentType = "deal_review", intentId = "draft" }: { intentType?: MiraIntentType; intentId?: string }) {
