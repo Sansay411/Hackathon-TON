@@ -29,6 +29,24 @@ export function AiReviewCard({ review, label }: { review: AiReview; label?: stri
       <div className="mt-4 space-y-2 text-sm font-semibold text-[#64748b]">
         {review.suggestedTerms.slice(0, 3).map((term) => <p key={term}>{term}</p>)}
       </div>
+      <ReviewBlock title={t.mira.missingItems} items={review.missingItems} />
+      <ReviewBlock title={t.mira.disputeChecklist} items={review.disputeRisks} />
     </section>
+  );
+}
+
+function ReviewBlock({ title, items }: { title: string; items: string[] }) {
+  if (items.length === 0) {
+    return null;
+  }
+  return (
+    <div className="mt-4">
+      <p className="text-xs font-black uppercase tracking-[0.5px] text-[#64748b]">{title}</p>
+      <ul className="mt-1 list-disc space-y-1 pl-5 text-sm font-semibold leading-5 text-[#171c20]">
+        {items.map((item, index) => (
+          <li key={`${item}-${index}`}>{item}</li>
+        ))}
+      </ul>
+    </div>
   );
 }

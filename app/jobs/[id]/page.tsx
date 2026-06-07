@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 import { ShieldAlert, Zap } from "lucide-react";
 import { AiReviewCard } from "@/components/mobile/AiReviewCard";
+import { MiraIntentPanel } from "@/components/mira-intent-panel";
 import { MobileShell } from "@/components/mobile/MobileShell";
 import { WalletGateLink } from "@/components/wallet-access";
 import { useLanguage } from "@/components/language-provider";
@@ -41,6 +42,19 @@ export default function JobDetailPage() {
           </div>
         </section>
         <AiReviewCard review={review} label={t.jobDetail.miraJobReview} />
+        <MiraIntentPanel
+          input={{
+            type: "job_review",
+            id: job.id,
+            title: job.title,
+            description: job.description,
+            budgetAmount: job.budgetAmount,
+            budgetToken: job.budgetToken,
+            deadline: job.deadline ?? undefined,
+            deliverables: job.aiMissingItems,
+            riskContextShort: job.aiRisk ?? undefined
+          }}
+        />
         <section className="rounded-[30px] border border-[#dfe3e8] bg-white p-5 shadow-[0_14px_34px_rgba(0,101,142,0.08)]">
           <div className="flex items-center gap-2">
             <Zap className="h-5 w-5 text-[#229ED9]" />

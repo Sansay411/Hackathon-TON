@@ -6,6 +6,7 @@ import { Bot, ReceiptText, ShieldCheck } from "lucide-react";
 import { AiRiskBadge } from "@/components/mobile/AiRiskBadge";
 import { DealTimeline } from "@/components/mobile/DealTimeline";
 import { MobileShell } from "@/components/mobile/MobileShell";
+import { MiraIntentPanel } from "@/components/mira-intent-panel";
 import { PaymentStatusCard } from "@/components/mobile/PaymentStatusCard";
 import { useLanguage } from "@/components/language-provider";
 import type { AiReview } from "@/lib/domain/types";
@@ -73,6 +74,19 @@ export default function DealDetailPage() {
             ))}
           </div>
         </section>
+
+        <MiraIntentPanel
+          input={{
+            type: "deal_review",
+            id,
+            title: t.dealDetail.dealName,
+            budgetAmount: "20",
+            budgetToken: "TON",
+            deliverables: review.suggestedTerms,
+            acceptanceCriteria: review.missingItems,
+            riskContextShort: review.riskLevel
+          }}
+        />
 
         <PaymentStatusCard dealId={id} amount="20" asset="TON" />
         <DealTimeline />

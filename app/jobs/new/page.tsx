@@ -14,7 +14,7 @@ export default function NewJobPage() {
           <h1 className="mt-1 text-[34px] font-black leading-none tracking-normal">{t.dealForm.titleJob}</h1>
           <p className="mt-2 text-sm font-medium leading-6 text-[#64748b]">{t.dealForm.subtitleJob}</p>
         </header>
-        <DealForm />
+        <DealForm intentType="job_review" intentId="draft-job" />
         <p className="rounded-[24px] bg-[#ffffff] p-4 text-sm font-semibold text-[#64748b] shadow-sm">
           {t.dealForm.publishNote}
         </p>

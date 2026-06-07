@@ -20,6 +20,7 @@ type TelegramWebApp = {
   ready: () => void;
   expand: () => void;
   setHeaderColor?: (color: string) => void;
+  openTelegramLink?: (url: string) => void;
 };
 
 export type VerifiedTelegramUser = {
