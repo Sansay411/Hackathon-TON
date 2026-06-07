@@ -62,3 +62,10 @@ export const stonfiQuoteSchema = z.object({
   network: z.enum(["testnet", "mainnet"]).default("mainnet"),
   dealId: z.string().min(1).max(120).optional()
 });
+
+export const stonfiSwapSchema = z.object({
+  initData: z.string().optional(),
+  dealId: z.string().min(1).max(120),
+  quoteId: z.string().min(1).max(200),
+  network: z.enum(["testnet", "mainnet"]).default("mainnet")
+});

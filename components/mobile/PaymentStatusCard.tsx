@@ -6,6 +6,8 @@ import { ArrowLeftRight, LockKeyhole, WalletCards } from "lucide-react";
 import { useTelegram } from "@/components/telegram-provider";
 import { useLanguage } from "@/components/language-provider";
 import { WalletGateButton, WalletGateNotice } from "@/components/wallet-access";
+import { StonfiQuoteCard } from "@/components/stonfi/StonfiQuoteCard";
+import { isStonfiQuoteResult, type StonfiQuoteResponse, type StonfiQuoteResult, type StonfiQuoteState } from "@/lib/stonfi/types";
 
 type PaymentStatusCardProps = {
   dealId: string;
@@ -29,6 +31,20 @@ type PaymentVerifyResponse = {
   error?: { code?: string; message?: string };
 };
 
+type StonfiQuoteApiResponse = {
+  ok?: boolean;
+  data?: { quote?: unknown };
+  error?: { code?: string; message?: string };
+};
+
+type StonfiSwapApiResponse = {
+  ok?: boolean;
+  data?: {
+    transaction?: Parameters<ReturnType<typeof useTonConnectUI>[0]["sendTransaction"]>[0];
+  };
+  error?: { code?: string; message?: string };
+};
+
 export function PaymentStatusCard({ dealId, amount, asset }: PaymentStatusCardProps) {
   const [tonConnectUI] = useTonConnectUI();
   const { initData } = useTelegram();
@@ -37,6 +53,78 @@ export function PaymentStatusCard({ dealId, amount, asset }: PaymentStatusCardPr
   const [status, setStatus] = useState<string>(t.paymentCard.awaitingTx);
   const [txHash, setTxHash] = useState("");
   const [busy, setBusy] = useState(false);
+  const [stonfiState, setStonfiState] = useState<StonfiQuoteState>("idle");
+  const [stonfiQuote, setStonfiQuote] = useState<StonfiQuoteResult | null>(null);
+  const [stonfiMessage, setStonfiMessage] = useState<string | null>(null);
+
+  async function requestStonfiQuote() {
+    setBusy(true);
+    setStonfiState("loading");
+    setStonfiMessage(null);
+    setStonfiQuote(null);
+    try {
+      const response = await fetch("/api/stonfi/quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fromAsset: "TON", toAsset: "USDT", settlementAmount: amount, network: "mainnet", dealId })
+      });
+      const payload = (await response.json()) as StonfiQuoteApiResponse;
+      if (response.status === 503) {
+        setStonfiState("setup_required");
+        setStonfiMessage(payload.error?.message ?? t.smartSettlement.errSetup);
+        return;
+      }
+      if (!response.ok || !payload.ok || !payload.data?.quote) {
+        setStonfiState("error");
+        setStonfiMessage(payload.error?.message ?? t.smartSettlement.errQuote);
+        return;
+      }
+
+      const quote = payload.data.quote as StonfiQuoteResponse;
+      if (isStonfiQuoteResult(quote)) {
+        setStonfiQuote(quote);
+        setStonfiState("ready");
+        return;
+      }
+
+      setStonfiState(quote.state === "setup_required" ? "setup_required" : "error");
+      setStonfiMessage(quote.message);
+    } catch (error) {
+      setStonfiState("error");
+      setStonfiMessage(error instanceof Error ? error.message : t.smartSettlement.errQuote);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function buildAndSendStonfiSwap() {
+    if (!stonfiQuote?.quoteId) {
+      setStonfiMessage("Quote id is required before building a STON.fi swap transaction.");
+      return;
+    }
+
+    setBusy(true);
+    setStonfiMessage(null);
+    try {
+      const response = await fetch("/api/stonfi/swap", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ initData, dealId, quoteId: stonfiQuote.quoteId, network: "mainnet" })
+      });
+      const payload = (await response.json()) as StonfiSwapApiResponse;
+      if (!response.ok || !payload.ok || !payload.data?.transaction) {
+        setStonfiMessage(payload.error?.message ?? "STON.fi swap transaction is not ready.");
+        return;
+      }
+      await tonConnectUI.sendTransaction(payload.data.transaction);
+      setStatus(t.paymentCard.walletAcceptedVerify);
+      setStonfiMessage("Wallet approved the STON.fi transaction. WorkPay still waits for escrow verification.");
+    } catch (error) {
+      setStonfiMessage(error instanceof Error ? error.message : t.paymentCard.walletRejected);
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
     <section className="rounded-[30px] border border-[#dfe3e8] bg-white p-5 shadow-[0_14px_34px_rgba(0,101,142,0.08)]">
@@ -144,12 +232,27 @@ export function PaymentStatusCard({ dealId, amount, asset }: PaymentStatusCardPr
                 <option>USDT</option>
               </select>
             </label>
-            <div className="rounded-2xl bg-[#f6faff] p-3 text-xs font-semibold text-[#64748b]">
-              {t.paymentCard.stonfiOmnistonLong}
+            <div className="rounded-2xl bg-white p-3 text-xs font-semibold leading-5 text-[#64748b]">
+              {t.smartSettlement.intro}
             </div>
-            <button className="w-full cursor-not-allowed rounded-2xl bg-[#dfe3e8] px-4 py-3 text-sm font-black text-[#64748b]" disabled type="button">
-              {t.paymentCard.swapSetupRequired}
+            {stonfiQuote ? <StonfiQuoteCard quote={stonfiQuote} /> : null}
+            <button
+              className="w-full rounded-2xl bg-[#229ED9] px-4 py-3 text-sm font-black text-white disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={busy}
+              onClick={requestStonfiQuote}
+              type="button"
+            >
+              {stonfiState === "loading" ? t.smartSettlement.gettingQuote : stonfiQuote ? t.smartSettlement.refreshQuote : t.smartSettlement.getQuote}
             </button>
+            {stonfiQuote ? (
+              <WalletGateButton
+                className="w-full rounded-2xl border border-[#229ED9] bg-white px-4 py-3 text-sm font-black text-[#00658e] disabled:cursor-not-allowed disabled:opacity-50"
+                connectedLabel="Build STON.fi swap with wallet"
+                onClick={buildAndSendStonfiSwap}
+              />
+            ) : null}
+            {stonfiMessage ? <p className="rounded-2xl bg-[#fff4f4] px-3 py-2 text-xs font-black text-[#c0392b]">{stonfiMessage}</p> : null}
+            <p className="text-xs font-semibold leading-5 text-[#94a3b8]">{t.smartSettlement.noteNoSwap}</p>
           </div>
         </div>
       )}
