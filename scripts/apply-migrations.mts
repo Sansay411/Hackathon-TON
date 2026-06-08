@@ -4,7 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 config({ path: ".env.local" });
-
+// The password candidates can be provided via the SUPABASE_DB_PASSWORD_OVERRIDE environment variable, separated by commas.
 const candidates = (process.env.SUPABASE_DB_PASSWORD_OVERRIDE || "2nc-Axp-x2j-XQq,55985598Artem")
   .split(",")
   .map((s) => s.trim())
