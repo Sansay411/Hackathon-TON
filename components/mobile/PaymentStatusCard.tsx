@@ -13,6 +13,7 @@ type PaymentStatusCardProps = {
   dealId: string;
   amount: string;
   asset: string;
+  onVerifiedDeposit?: (balanceTon: number) => void;
 };
 
 type PaymentCreateResponse = {
@@ -58,7 +59,7 @@ type PaymentReadinessResponse = {
   data?: PaymentReadiness;
 };
 
-export function PaymentStatusCard({ dealId, amount, asset }: PaymentStatusCardProps) {
+export function PaymentStatusCard({ dealId, amount, asset, onVerifiedDeposit }: PaymentStatusCardProps) {
   const [tonConnectUI] = useTonConnectUI();
   const { initData } = useTelegram();
   const { isConnected } = useWalletAccess();
@@ -249,17 +250,21 @@ export function PaymentStatusCard({ dealId, amount, asset }: PaymentStatusCardPr
                     const payload = (await response.json()) as PaymentVerifyResponse;
                     const verification = payload.data?.verification;
                     const balanceUpdate = payload.data?.balanceUpdate;
-                    if (!response.ok || !payload.ok) {
-                      setStatus(payload.error?.message ?? "Verification unavailable");
-                      return;
-                    }
-                    setStatus(
-                      verification?.status === "confirmed"
-                        ? balanceUpdate?.balanceTon != null
-                          ? `TONCenter confirmed. Balance: ${balanceUpdate.balanceTon} TON`
-                          : "TONCenter confirmed payment"
-                        : verification?.reason ?? verification?.status ?? "Not confirmed"
-                    );
+                  if (!response.ok || !payload.ok) {
+                    setStatus(payload.error?.message ?? "Verification unavailable");
+                    return;
+                  }
+                  const newBalance = balanceUpdate?.balanceTon;
+                  setStatus(
+                    verification?.status === "confirmed"
+                      ? newBalance !== null && newBalance !== undefined
+                        ? `TONCenter confirmed. Balance: ${newBalance} TON`
+                        : "TONCenter confirmed payment"
+                      : verification?.reason ?? verification?.status ?? "Not confirmed"
+                  );
+                  if (verification?.status === "confirmed" && newBalance !== null && newBalance !== undefined) {
+                    onVerifiedDeposit?.(newBalance);
+                  }
                   } catch (error) {
                     setStatus(error instanceof Error ? error.message : "TONCenter request failed");
                   } finally {

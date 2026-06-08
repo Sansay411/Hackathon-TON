@@ -4,7 +4,6 @@ import Link from "next/link";
 import type { Route } from "next";
 import { useEffect, useState } from "react";
 import { Bell, BriefcaseBusiness, Building2, CheckCircle2, Code2, PlusCircle, Search, ShieldCheck, Sparkles, WalletCards, Zap } from "lucide-react";
-import { DemoSeedButton } from "@/components/mobile/DemoSeedButton";
 import { LaunchOnboarding } from "@/components/mobile/LaunchOnboarding";
 import { MobileShell } from "@/components/mobile/MobileShell";
 import { WorkPayLogo } from "@/components/mobile/WorkPayLogo";
@@ -24,7 +23,6 @@ export default function HomePage() {
           <QuickActions />
           <ActiveDeal />
           <RecommendedJobs />
-          <DemoSeedButton />
         </div>
       </MobileShell>
     </LaunchOnboarding>
