@@ -1,7 +1,7 @@
 import { config } from "dotenv";
 import fs from "node:fs";
 import path from "node:path";
-
+//3.0.0+ supports top-level await, so we can use it here without wrapping in an async function
 config({ path: ".env.local" });
 
 const PAT = process.env.SUPABASE_PAT_OVERRIDE ?? "sbp_b589ddc72f63fb8060eff581c399220d1051088d";
